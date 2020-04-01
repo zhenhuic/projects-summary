@@ -1,0 +1,9 @@
+2019-11-18 16:19:08,977              ERROR   :execute failed: insert into bandcard values %s,%s,%s;
+2019-11-18 16:19:08,977              ERROR   :params: [(0, 100), (0, 200), (0, 300)]
+2019-11-18 16:19:08,977              INFO    :²Ù×÷Ê§°Ü
+2019-11-18 16:52:54,687              ERROR   :execute failed: insert into PACK1(time,component1,component2,component3,success) values(Now(),1,1,1,0)
+2019-11-18 16:52:54,687              ERROR   :params: None
+2019-11-18 19:02:47,000              ERROR   :execute failed: insert into PACK1(data,component1,component2,component3,success) values(Now(),1111)
+2019-11-18 19:02:47,000              ERROR   :params: None
+2019-11-18 19:03:03,221              ERROR   :execute failed: insert into PACK1(data,component1,component2,component3,success) values(Now(),1111)
+2019-11-18 19:03:03,222              ERROR   :params: None

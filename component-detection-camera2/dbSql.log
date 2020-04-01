@@ -1,0 +1,2 @@
+2019-11-18 21:20:07,766              ERROR   :execute failed: insert into PACK(data,component1,component2,component3,success) values(Now(),1,1,0,1)
+2019-11-18 21:20:07,766              ERROR   :params: None

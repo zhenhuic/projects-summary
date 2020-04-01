@@ -1,0 +1,1 @@
+D:\Anaconda\python.exe D:/project/component-detection-camera2/gui_main.py
