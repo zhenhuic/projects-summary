@@ -1,0 +1,112 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'cps.ui'
+#
+# Created by: PyQt5 UI code generator 5.12.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 622)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(0, 0, 801, 41))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.label_3.setFont(font)
+        self.label_3.setStyleSheet("background-color: rgb(61, 61, 61);\n"
+"color: rgb(255, 255, 255);")
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(0, 40, 801, 551))
+        self.label.setStyleSheet("background-image: url(:/newPrefix/images/1.png);")
+        self.label.setText("")
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(-10, 70, 841, 331))
+        self.label_2.setStyleSheet("image: url(:/newPrefix/images/2.png);")
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton.setGeometry(QtCore.QRect(200, 430, 421, 51))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.pushButton.setFont(font)
+        self.pushButton.setObjectName("pushButton")
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setGeometry(QtCore.QRect(200, 500, 421, 51))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.pushButton_2.setFont(font)
+        self.pushButton_2.setObjectName("pushButton_2")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setObjectName("menubar")
+        self.menu_F = QtWidgets.QMenu(self.menubar)
+        self.menu_F.setObjectName("menu_F")
+        self.menu_T = QtWidgets.QMenu(self.menubar)
+        self.menu_T.setObjectName("menu_T")
+        self.menu_W = QtWidgets.QMenu(self.menubar)
+        self.menu_W.setObjectName("menu_W")
+        self.menu_S = QtWidgets.QMenu(self.menubar)
+        self.menu_S.setObjectName("menu_S")
+        self.menu = QtWidgets.QMenu(self.menu_S)
+        self.menu.setObjectName("menu")
+        self.menu_R = QtWidgets.QMenu(self.menubar)
+        self.menu_R.setObjectName("menu_R")
+        self.menu_V = QtWidgets.QMenu(self.menubar)
+        self.menu_V.setObjectName("menu_V")
+        self.menu_A = QtWidgets.QMenu(self.menubar)
+        self.menu_A.setObjectName("menu_A")
+        self.menu_H = QtWidgets.QMenu(self.menubar)
+        self.menu_H.setObjectName("menu_H")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.action_2 = QtWidgets.QAction(MainWindow)
+        self.action_2.setObjectName("action_2")
+        self.menu.addAction(self.action_2)
+        self.menu_S.addAction(self.menu.menuAction())
+        self.menubar.addAction(self.menu_F.menuAction())
+        self.menubar.addAction(self.menu_T.menuAction())
+        self.menubar.addAction(self.menu_W.menuAction())
+        self.menubar.addAction(self.menu_S.menuAction())
+        self.menubar.addAction(self.menu_R.menuAction())
+        self.menubar.addAction(self.menu_V.menuAction())
+        self.menubar.addAction(self.menu_A.menuAction())
+        self.menubar.addAction(self.menu_H.menuAction())
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "工厂CPS产线建模与分析系统"))
+        self.label_3.setText(_translate("MainWindow", "杭州西奥电梯有限公司 厚板生产线"))
+        self.pushButton.setText(_translate("MainWindow", "点击查看生产线模型"))
+        self.pushButton_2.setText(_translate("MainWindow", "点击分析生产线性能"))
+        self.menu_F.setTitle(_translate("MainWindow", "文件(F)"))
+        self.menu_T.setTitle(_translate("MainWindow", "工具(T)"))
+        self.menu_W.setTitle(_translate("MainWindow", "窗口(W)"))
+        self.menu_S.setTitle(_translate("MainWindow", "设置(S)"))
+        self.menu.setTitle(_translate("MainWindow", "生产线选择"))
+        self.menu_R.setTitle(_translate("MainWindow", "运行(R)"))
+        self.menu_V.setTitle(_translate("MainWindow", "查看(V)"))
+        self.menu_A.setTitle(_translate("MainWindow", "分析(A)"))
+        self.menu_H.setTitle(_translate("MainWindow", "帮助(H)"))
+        self.action_2.setText(_translate("MainWindow", "厚板线"))
+
+
+import resource_rc

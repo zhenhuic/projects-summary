@@ -1,0 +1,13 @@
+<RCC>
+  <qresource prefix="icon">
+    <file>icon/detection.png</file>
+    <file>icon/location.png</file>
+    <file>icon/measure.png</file>
+    <file>icon/recognition.png</file>
+    <file>icon/camera.png</file>
+    <file>icon/image.png</file>
+    <file>icon/image_list.png</file>
+    <file>icon/play.png</file>
+    <file>icon/stop.png</file>
+  </qresource>
+</RCC>

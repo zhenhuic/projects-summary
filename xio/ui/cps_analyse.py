@@ -1,0 +1,132 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'cps_analyse.ui'
+#
+# Created by: PyQt5 UI code generator 5.12.1
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+
+class Ui_MainWindow3(object):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(800, 600)
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.label_3 = QtWidgets.QLabel(self.centralwidget)
+        self.label_3.setGeometry(QtCore.QRect(0, 0, 801, 41))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.label_3.setFont(font)
+        self.label_3.setStyleSheet("background-color: rgb(61, 61, 61);\n"
+"color: rgb(255, 255, 255);")
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setObjectName("label_3")
+        self.label_4 = QtWidgets.QLabel(self.centralwidget)
+        self.label_4.setGeometry(QtCore.QRect(0, 510, 401, 41))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.label_4.setFont(font)
+        self.label_4.setStyleSheet("background-color: rgb(61, 61, 61);\n"
+"color: rgb(255, 255, 255);")
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setObjectName("label_4")
+        self.label_5 = QtWidgets.QLabel(self.centralwidget)
+        self.label_5.setGeometry(QtCore.QRect(400, 510, 401, 41))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.label_5.setFont(font)
+        self.label_5.setStyleSheet("background-color: rgb(61, 61, 61);\n"
+"color: rgb(255, 255, 255);")
+        self.label_5.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_5.setObjectName("label_5")
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(0, 120, 391, 481))
+        self.label.setStyleSheet("image: url(:/newPrefix/images/TR.png);")
+        self.label.setText("")
+        self.label.setObjectName("label")
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)
+        self.label_2.setGeometry(QtCore.QRect(400, 150, 391, 421))
+        self.label_2.setStyleSheet("image: url(:/newPrefix/images/UR.png);")
+        self.label_2.setText("")
+        self.label_2.setObjectName("label_2")
+        self.label_6 = QtWidgets.QLabel(self.centralwidget)
+        self.label_6.setGeometry(QtCore.QRect(0, 170, 801, 41))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(14)
+        self.label_6.setFont(font)
+        self.label_6.setStyleSheet("background-color: rgb(61, 61, 61);\n"
+"color: rgb(255, 255, 255);")
+        self.label_6.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_6.setObjectName("label_6")
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setGeometry(QtCore.QRect(0, 40, 801, 131))
+        font = QtGui.QFont()
+        font.setFamily("黑体")
+        font.setPointSize(11)
+        self.label_7.setFont(font)
+        self.label_7.setStyleSheet("color: rgb(0, 0, 0);\n"
+"background-color: rgb(200, 197, 194);")
+        self.label_7.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_7.setObjectName("label_7")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 23))
+        self.menubar.setObjectName("menubar")
+        self.menu_F = QtWidgets.QMenu(self.menubar)
+        self.menu_F.setObjectName("menu_F")
+        self.menu_T = QtWidgets.QMenu(self.menubar)
+        self.menu_T.setObjectName("menu_T")
+        self.menu_W = QtWidgets.QMenu(self.menubar)
+        self.menu_W.setObjectName("menu_W")
+        self.menu_R = QtWidgets.QMenu(self.menubar)
+        self.menu_R.setObjectName("menu_R")
+        self.menu_V = QtWidgets.QMenu(self.menubar)
+        self.menu_V.setObjectName("menu_V")
+        self.menu_A = QtWidgets.QMenu(self.menubar)
+        self.menu_A.setObjectName("menu_A")
+        self.menu_A_2 = QtWidgets.QMenu(self.menubar)
+        self.menu_A_2.setObjectName("menu_A_2")
+        self.menu_H = QtWidgets.QMenu(self.menubar)
+        self.menu_H.setObjectName("menu_H")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.menubar.addAction(self.menu_F.menuAction())
+        self.menubar.addAction(self.menu_T.menuAction())
+        self.menubar.addAction(self.menu_W.menuAction())
+        self.menubar.addAction(self.menu_R.menuAction())
+        self.menubar.addAction(self.menu_V.menuAction())
+        self.menubar.addAction(self.menu_A.menuAction())
+        self.menubar.addAction(self.menu_A_2.menuAction())
+        self.menubar.addAction(self.menu_H.menuAction())
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "工厂CPS产线性能分析系统"))
+        self.label_3.setText(_translate("MainWindow", "杭州西奥电梯有限公司 厚板生产线 性能分析结果"))
+        self.label_4.setText(_translate("MainWindow", "变迁吞吐率"))
+        self.label_5.setText(_translate("MainWindow", "设备利用率"))
+        self.label_6.setText(_translate("MainWindow", "变迁吞吐率以及设备利用率的波动范围"))
+        self.label_7.setText(_translate("MainWindow", "<html><head/><body><p>分析步骤：</p><p>(1)压缩面向对象广义随机Petri网至一般广义随机Petri网；</p><p>(2)使用模糊数学方法将各个工序的激发速率值进行模糊化；</p><p>(3)使用马尔科夫方法对系统的稳态概率进行分析；</p><p>(4)对结果进行去模糊得到最小值、最有可能值以及最大值。</p></body></html>"))
+        self.menu_F.setTitle(_translate("MainWindow", "文件(F)"))
+        self.menu_T.setTitle(_translate("MainWindow", "工具(T)"))
+        self.menu_W.setTitle(_translate("MainWindow", "窗口(W)"))
+        self.menu_R.setTitle(_translate("MainWindow", "设置(S)"))
+        self.menu_V.setTitle(_translate("MainWindow", "运行(R)"))
+        self.menu_A.setTitle(_translate("MainWindow", "查看(V)"))
+        self.menu_A_2.setTitle(_translate("MainWindow", "分析(A)"))
+        self.menu_H.setTitle(_translate("MainWindow", "帮助(H)"))
+
+
+import resource_rc
