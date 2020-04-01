@@ -33,9 +33,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
     @pyqtSlot(QImage)
     def set_frame(self, image):
         self.videoLabel.setPixmap(QPixmap.fromImage(image))
-        self.statusbar.showMessage('正在检测'
-                                   + ' ' * 110 +
-                                   '工位1    零件：桶，箱子')
+        self.statusbar.showMessage('正在检测')
 
     @pyqtSlot(QImage)
     def set_record(self, image):
@@ -73,8 +71,7 @@ class DetectionThread(QThread):
     status_update = pyqtSignal(str)
 
     def run(self):
-        # main(self)
-        pass
+        main(self, 'video/houban3.avi')
 
 
 def except_hook(cls, exception, traceback):
