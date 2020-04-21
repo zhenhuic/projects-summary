@@ -24,17 +24,17 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.pushButton.clicked.connect(self.select)
         self.pushButton_2.clicked.connect(self.monitor)
 
-    # 菜单栏-设置-监控线设置-厚板
+    # 菜单栏-设置-监控线设置-厚板线
     def action_trigger2(self):
         self.label.setText("实时日志监控(厚板线)")
         self.label_2.setText("报警日志分析(厚板线)")
 
-    # 菜单栏-设置-监控线设置-厚板
+    # 菜单栏-设置-监控线设置-侧板焊接线
     def action_trigger3(self):
         self.label.setText("实时日志监控(侧板焊接线)")
         self.label_2.setText("报警日志分析(侧板焊接线)")
 
-    # 菜单栏-设置-监控线设置-厚板
+    # 菜单栏-设置-监控线设置-新萨瓦尼尼线
     def action_trigger4(self):
         self.label.setText("实时日志监控(新萨瓦尼尼线)")
         self.label_2.setText("报警日志分析(新萨瓦尼尼线)")
@@ -42,6 +42,12 @@ class MainApp(QMainWindow, Ui_MainWindow):
     # 按钮点击查询
     @pyqtSlot()
     def select(self):
+        self.textEdit_2.clear()
+        self.textEdit_3.clear()
+        self.textEdit_4.clear()
+        self.textEdit_5.clear()
+        self.textEdit_6.clear()
+        self.textEdit_7.clear()
         self.textEdit_2.append(str(self.numberOfMessage))
         self.textEdit_3.append(str(self.numberOfHandledMessage))
         self.textEdit_4.append(str(self.numberOfMessage - self.numberOfHandledMessage))
