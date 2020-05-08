@@ -71,7 +71,7 @@ class DetectionThread(QThread):
     status_update = pyqtSignal(str)
 
     def run(self):
-        main(self, 'video/houban3.avi')
+        main(self, 'video/1_00_00_13-01_12_20.avi')
 
 
 def except_hook(cls, exception, traceback):

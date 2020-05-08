@@ -151,7 +151,7 @@ def array_to_QImage(img, size):
     return qimage
 
 
-def main(qthread, video_path: str = 'video/mach.avi'):
+def main(qthread, video_path: str):
     # 蓝色范围
     lower_blue = np.array([100, 43, 46])
     upper_blue = np.array([124, 255, 255])
@@ -378,6 +378,7 @@ def main(qthread, video_path: str = 'video/mach.avi'):
 
             qimage = array_to_QImage(frame, (855, 466))
             qthread.video_change_pixmap.emit(qimage)
+            time.sleep(0.03)
             # cv2.imshow('frame', frame)
             # if cv2.waitKey(25) & 0xFF == ord('q'):
             #     break
