@@ -134,7 +134,7 @@ class Ui_Dialog_reporter(object):
                 elif singleFrequencyAndTimeToday[1] > 5 and singleFrequencyAndTimeToday[2] < 120:
                     suggest += "存在隐藏故障，请检查！\n"
                 else:
-                    suggest += "该点位表现良好！"
+                    suggest += "（无）该点位表现良好！"
                 result.append(str(x) + '------' + suggest)
                 msg += data
             msg += "-" * 80 + "\n"
