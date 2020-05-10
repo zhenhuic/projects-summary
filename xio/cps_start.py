@@ -10,7 +10,8 @@ from ui.set_email_address import Ui_Dialog
 
 
 class MainApp(QMainWindow, Ui_MainWindow):
-    email_address = "1787626381@qq.com"
+    email_address = ""
+    filename = None
 
     def __init__(self):
         super(MainApp, self).__init__()
@@ -20,190 +21,46 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.show_z(False)
         self.show_b(False)
 
-        self.pushButton.clicked.connect(self.open_conf)
-        self.pushButton_2.clicked.connect(self.open_log)
+        self.pushButton.clicked.connect(self.open_file)
+        self.pushButton_2.clicked.connect(self.open_file)
+        self.pushButton_3.clicked.connect(self.confirm_conf)
+        self.pushButton_4.clicked.connect(self.confirm_log)
+        self.pushButton_5.clicked.connect(self.send_email)
         self.action_8.triggered.connect(self.set_email_address)
 
-    def set_email_address(self):
-        dialog = Ui_Dialog()
-        self.email_address = dialog.lineEdit.text()
-        print(self.email_address)
-
-    def show_h(self, flag):
-        if flag is False:
-            self.label_hp1.setVisible(False)
-            self.label_hp2.setVisible(False)
-            self.label_hp3.setVisible(False)
-            self.label_hp4.setVisible(False)
-            self.label_hp5.setVisible(False)
-            self.label_hp6.setVisible(False)
-            self.label_hp7.setVisible(False)
-            self.label_hp8.setVisible(False)
-            self.label_hp9.setVisible(False)
-            self.label_hp10.setVisible(False)
-
-            self.label_ht1.setVisible(False)
-            self.label_ht2.setVisible(False)
-            self.label_ht3.setVisible(False)
-            self.label_ht4.setVisible(False)
-            self.label_ht5.setVisible(False)
-            self.label_ht6.setVisible(False)
-            self.label_ht7.setVisible(False)
-            self.label_ht8.setVisible(False)
-            self.label_ht9.setVisible(False)
-            self.label_ht10.setVisible(False)
-
-            self.label_ha1.setVisible(False)
-            self.label_ha2.setVisible(False)
-            self.label_ha3.setVisible(False)
-            self.label_ha4.setVisible(False)
-            self.label_ha5.setVisible(False)
-            self.label_ha6.setVisible(False)
-            self.label_ha7.setVisible(False)
-            self.label_ha8.setVisible(False)
-            self.label_ha9.setVisible(False)
-            self.label_ha10.setVisible(False)
-
-        elif flag is True:
-            self.label_hp1.setVisible(True)
-            self.label_hp2.setVisible(True)
-            self.label_hp3.setVisible(True)
-            self.label_hp4.setVisible(True)
-            self.label_hp5.setVisible(True)
-            self.label_hp6.setVisible(True)
-            self.label_hp7.setVisible(True)
-            self.label_hp8.setVisible(True)
-            self.label_hp9.setVisible(True)
-            self.label_hp10.setVisible(True)
-
-            self.label_ht1.setVisible(True)
-            self.label_ht2.setVisible(True)
-            self.label_ht3.setVisible(True)
-            self.label_ht4.setVisible(True)
-            self.label_ht5.setVisible(True)
-            self.label_ht6.setVisible(True)
-            self.label_ht7.setVisible(True)
-            self.label_ht8.setVisible(True)
-            self.label_ht9.setVisible(True)
-            self.label_ht10.setVisible(True)
-
-            self.label_ha1.setVisible(True)
-            self.label_ha2.setVisible(True)
-            self.label_ha3.setVisible(True)
-            self.label_ha4.setVisible(True)
-            self.label_ha5.setVisible(True)
-            self.label_ha6.setVisible(True)
-            self.label_ha7.setVisible(True)
-            self.label_ha8.setVisible(True)
-            self.label_ha9.setVisible(True)
-            self.label_ha10.setVisible(True)
-
-    def show_z(self, flag):
-        if flag is False:
-            self.label_zp1.setVisible(False)
-            self.label_zp2.setVisible(False)
-            self.label_zp3.setVisible(False)
-            self.label_zp4.setVisible(False)
-            self.label_zp5.setVisible(False)
-            self.label_zp6.setVisible(False)
-
-            self.label_zt1.setVisible(False)
-            self.label_zt2.setVisible(False)
-            self.label_zt3.setVisible(False)
-            self.label_zt4.setVisible(False)
-            self.label_zt5.setVisible(False)
-            self.label_zt6.setVisible(False)
-
-            self.label_za1.setVisible(False)
-            self.label_za2.setVisible(False)
-            self.label_za3.setVisible(False)
-            self.label_za4.setVisible(False)
-            self.label_za5.setVisible(False)
-
-        elif flag is True:
-            self.label_zp1.setVisible(True)
-            self.label_zp2.setVisible(True)
-            self.label_zp3.setVisible(True)
-            self.label_zp4.setVisible(True)
-            self.label_zp5.setVisible(True)
-            self.label_zp6.setVisible(True)
-
-            self.label_zt1.setVisible(True)
-            self.label_zt2.setVisible(True)
-            self.label_zt3.setVisible(True)
-            self.label_zt4.setVisible(True)
-            self.label_zt5.setVisible(True)
-            self.label_zt6.setVisible(True)
-
-            self.label_za1.setVisible(True)
-            self.label_za2.setVisible(True)
-            self.label_za3.setVisible(True)
-            self.label_za4.setVisible(True)
-            self.label_za5.setVisible(True)
-
-    def show_b(self, flag):
-        if flag is False:
-            self.label_bp1.setVisible(False)
-            self.label_bp2.setVisible(False)
-            self.label_bp3.setVisible(False)
-            self.label_bp4.setVisible(False)
-            self.label_bp5.setVisible(False)
-
-            self.label_bt1.setVisible(False)
-            self.label_bt2.setVisible(False)
-            self.label_bt3.setVisible(False)
-            self.label_bt4.setVisible(False)
-            self.label_bt5.setVisible(False)
-
-            self.label_ba1.setVisible(False)
-            self.label_ba2.setVisible(False)
-            self.label_ba3.setVisible(False)
-            self.label_ba4.setVisible(False)
-
-        elif flag is True:
-            self.label_bp1.setVisible(True)
-            self.label_bp2.setVisible(True)
-            self.label_bp3.setVisible(True)
-            self.label_bp4.setVisible(True)
-            self.label_bp5.setVisible(True)
-
-            self.label_bt1.setVisible(True)
-            self.label_bt2.setVisible(True)
-            self.label_bt3.setVisible(True)
-            self.label_bt4.setVisible(True)
-            self.label_bt5.setVisible(True)
-
-            self.label_ba1.setVisible(True)
-            self.label_ba2.setVisible(True)
-            self.label_ba3.setVisible(True)
-            self.label_ba4.setVisible(True)
+    @pyqtSlot()
+    def open_file(self):
+        self.filename = QFileDialog.getOpenFileName(self, 'open file', '/')
+        self.textEdit.append('导入文件：' + str(self.filename[0]) + '\n')
 
     @pyqtSlot()
-    def open_conf(self):
-        filename = QFileDialog.getOpenFileName(self, 'open file', '/')
-        if filename[0]:
+    def confirm_conf(self):
+        if "txt" not in self.textEdit.toPlainText():
+            self.textEdit.append("请先导入配置文件\n")
+            return
+        if self.filename[0]:
             try:
-                f = open(filename[0], 'r')
+                f = open(self.filename[0], 'r')
                 with f:
                     scx = f.readline()
                     time.sleep(1)
                     if scx == "厚板线\n":
                         self.label.setText("生产流程模型(厚板线)")
-                        self.label_20.setText("流程挖掘与优化信息(厚板线)")
+                        self.label_20.setText("流程挖掘与优化(厚板线)")
                         self.textEdit.clear()
                         self.show_h(True)
                         self.show_z(False)
                         self.show_b(False)
                     elif scx == "专机线\n":
                         self.label.setText("生产流程模型(专机线)")
-                        self.label_20.setText("流程挖掘与优化信息(专机线)")
+                        self.label_20.setText("流程挖掘与优化(专机线)")
                         self.textEdit.clear()
                         self.show_h(False)
                         self.show_z(True)
                         self.show_b(False)
                     elif scx == "薄板线\n":
                         self.label.setText("生产流程模型(薄板线)")
-                        self.label_20.setText("流程挖掘与优化信息(薄板线)")
+                        self.label_20.setText("流程挖掘与优化(薄板线)")
                         self.textEdit.clear()
                         self.show_h(False)
                         self.show_z(False)
@@ -214,12 +71,13 @@ class MainApp(QMainWindow, Ui_MainWindow):
                 pass
 
     @pyqtSlot()
-    def open_log(self):
-        email = Email()
-        filename = QFileDialog.getOpenFileName(self, 'open file', '/')
-        if filename[0]:
+    def confirm_log(self):
+        if "txt" not in self.textEdit.toPlainText():
+            self.textEdit.append("请先导入日志文件\n")
+            return
+        if self.filename[0]:
             try:
-                f = open(filename[0], 'r')
+                f = open(self.filename[0], 'r')
                 with f:
                     data = []
                     for line in f.readlines()[6:]:
@@ -410,8 +268,6 @@ class MainApp(QMainWindow, Ui_MainWindow):
                         self.textEdit.append("厚板线工序平均耗时汇总：" + str(round(total, 1)) + "s\n")
                         self.textEdit.append("提示信息：厚板折弯工序加工耗时过长\n")
                         self.textEdit.append("优化建议：建议检查码垛堆叠以及机器人故障情况\n")
-                        email.send_email(self.email_address, self.textEdit.toPlainText(), "提示信息")
-                        self.textEdit.append("已发送邮件\n")
                     if self.label.text() == "生产流程模型(专机线)":
                         time.sleep(1)
                         zp1_start_time = []
@@ -528,8 +384,6 @@ class MainApp(QMainWindow, Ui_MainWindow):
                         self.textEdit.append("专机线工序平均耗时汇总：" + str(round(total, 1)) + "s\n")
                         self.textEdit.append("提示信息：自动折弯工序加工耗时过长\n")
                         self.textEdit.append("优化建议：建议检查折弯设备故障情况\n")
-                        email.send_email(self.email_address, self.textEdit.toPlainText(), "提示信息")
-                        self.textEdit.append("已发送邮件\n")
                     if self.label.text() == "生产流程模型(薄板线)":
                         time.sleep(1)
                         bp1_start_time = []
@@ -629,10 +483,170 @@ class MainApp(QMainWindow, Ui_MainWindow):
                         self.textEdit.append("专机线工序平均耗时汇总：" + str(round(total, 1)) + "s\n")
                         self.textEdit.append("提示信息：自动折弯工序加工耗时过长\n")
                         self.textEdit.append("优化建议：建议检查折弯设备故障情况\n")
-                        email.send_email(self.email_address, self.textEdit.toPlainText(), "提示信息")
-                        self.textEdit.append("已发送邮件\n")
             except:
                 pass
+
+    def send_email(self):
+        if self.email_address == "":
+            self.textEdit.append("请先设置邮箱\n")
+        else:
+            email = Email()
+            email.send_email(self.email_address, self.textEdit.toPlainText(), "提示信息")
+            self.textEdit.append("已发送邮件\n")
+
+    def set_email_address(self):
+        dialog = Ui_Dialog()
+        self.email_address = dialog.lineEdit.text()
+        print(self.email_address)
+
+    def show_h(self, flag):
+        if flag is False:
+            self.label_hp1.setVisible(False)
+            self.label_hp2.setVisible(False)
+            self.label_hp3.setVisible(False)
+            self.label_hp4.setVisible(False)
+            self.label_hp5.setVisible(False)
+            self.label_hp6.setVisible(False)
+            self.label_hp7.setVisible(False)
+            self.label_hp8.setVisible(False)
+            self.label_hp9.setVisible(False)
+            self.label_hp10.setVisible(False)
+
+            self.label_ht1.setVisible(False)
+            self.label_ht2.setVisible(False)
+            self.label_ht3.setVisible(False)
+            self.label_ht4.setVisible(False)
+            self.label_ht5.setVisible(False)
+            self.label_ht6.setVisible(False)
+            self.label_ht7.setVisible(False)
+            self.label_ht8.setVisible(False)
+            self.label_ht9.setVisible(False)
+            self.label_ht10.setVisible(False)
+
+            self.label_ha1.setVisible(False)
+            self.label_ha2.setVisible(False)
+            self.label_ha3.setVisible(False)
+            self.label_ha4.setVisible(False)
+            self.label_ha5.setVisible(False)
+            self.label_ha6.setVisible(False)
+            self.label_ha7.setVisible(False)
+            self.label_ha8.setVisible(False)
+            self.label_ha9.setVisible(False)
+            self.label_ha10.setVisible(False)
+
+        elif flag is True:
+            self.label_hp1.setVisible(True)
+            self.label_hp2.setVisible(True)
+            self.label_hp3.setVisible(True)
+            self.label_hp4.setVisible(True)
+            self.label_hp5.setVisible(True)
+            self.label_hp6.setVisible(True)
+            self.label_hp7.setVisible(True)
+            self.label_hp8.setVisible(True)
+            self.label_hp9.setVisible(True)
+            self.label_hp10.setVisible(True)
+
+            self.label_ht1.setVisible(True)
+            self.label_ht2.setVisible(True)
+            self.label_ht3.setVisible(True)
+            self.label_ht4.setVisible(True)
+            self.label_ht5.setVisible(True)
+            self.label_ht6.setVisible(True)
+            self.label_ht7.setVisible(True)
+            self.label_ht8.setVisible(True)
+            self.label_ht9.setVisible(True)
+            self.label_ht10.setVisible(True)
+
+            self.label_ha1.setVisible(True)
+            self.label_ha2.setVisible(True)
+            self.label_ha3.setVisible(True)
+            self.label_ha4.setVisible(True)
+            self.label_ha5.setVisible(True)
+            self.label_ha6.setVisible(True)
+            self.label_ha7.setVisible(True)
+            self.label_ha8.setVisible(True)
+            self.label_ha9.setVisible(True)
+            self.label_ha10.setVisible(True)
+
+    def show_z(self, flag):
+        if flag is False:
+            self.label_zp1.setVisible(False)
+            self.label_zp2.setVisible(False)
+            self.label_zp3.setVisible(False)
+            self.label_zp4.setVisible(False)
+            self.label_zp5.setVisible(False)
+            self.label_zp6.setVisible(False)
+
+            self.label_zt1.setVisible(False)
+            self.label_zt2.setVisible(False)
+            self.label_zt3.setVisible(False)
+            self.label_zt4.setVisible(False)
+            self.label_zt5.setVisible(False)
+            self.label_zt6.setVisible(False)
+
+            self.label_za1.setVisible(False)
+            self.label_za2.setVisible(False)
+            self.label_za3.setVisible(False)
+            self.label_za4.setVisible(False)
+            self.label_za5.setVisible(False)
+
+        elif flag is True:
+            self.label_zp1.setVisible(True)
+            self.label_zp2.setVisible(True)
+            self.label_zp3.setVisible(True)
+            self.label_zp4.setVisible(True)
+            self.label_zp5.setVisible(True)
+            self.label_zp6.setVisible(True)
+
+            self.label_zt1.setVisible(True)
+            self.label_zt2.setVisible(True)
+            self.label_zt3.setVisible(True)
+            self.label_zt4.setVisible(True)
+            self.label_zt5.setVisible(True)
+            self.label_zt6.setVisible(True)
+
+            self.label_za1.setVisible(True)
+            self.label_za2.setVisible(True)
+            self.label_za3.setVisible(True)
+            self.label_za4.setVisible(True)
+            self.label_za5.setVisible(True)
+
+    def show_b(self, flag):
+        if flag is False:
+            self.label_bp1.setVisible(False)
+            self.label_bp2.setVisible(False)
+            self.label_bp3.setVisible(False)
+            self.label_bp4.setVisible(False)
+            self.label_bp5.setVisible(False)
+
+            self.label_bt1.setVisible(False)
+            self.label_bt2.setVisible(False)
+            self.label_bt3.setVisible(False)
+            self.label_bt4.setVisible(False)
+            self.label_bt5.setVisible(False)
+
+            self.label_ba1.setVisible(False)
+            self.label_ba2.setVisible(False)
+            self.label_ba3.setVisible(False)
+            self.label_ba4.setVisible(False)
+
+        elif flag is True:
+            self.label_bp1.setVisible(True)
+            self.label_bp2.setVisible(True)
+            self.label_bp3.setVisible(True)
+            self.label_bp4.setVisible(True)
+            self.label_bp5.setVisible(True)
+
+            self.label_bt1.setVisible(True)
+            self.label_bt2.setVisible(True)
+            self.label_bt3.setVisible(True)
+            self.label_bt4.setVisible(True)
+            self.label_bt5.setVisible(True)
+
+            self.label_ba1.setVisible(True)
+            self.label_ba2.setVisible(True)
+            self.label_ba3.setVisible(True)
+            self.label_ba4.setVisible(True)
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>生产业务流程建模、挖掘与优化系统</string>
+   <string>复杂生产业务流程建模、挖掘与优化系统</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label_hp1">
@@ -2896,7 +2896,7 @@
      <rect>
       <x>10</x>
       <y>40</y>
-      <width>371</width>
+      <width>301</width>
       <height>31</height>
      </rect>
     </property>
@@ -3052,7 +3052,7 @@
      <rect>
       <x>400</x>
       <y>40</y>
-      <width>391</width>
+      <width>311</width>
       <height>31</height>
      </rect>
     </property>
@@ -3642,7 +3642,7 @@
      <string notr="true">background-color: rgb(61, 61, 61);</string>
     </property>
     <property name="text">
-     <string>优化信息</string>
+     <string>挖掘与优化</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -3654,7 +3654,7 @@
       <x>10</x>
       <y>310</y>
       <width>781</width>
-      <height>301</height>
+      <height>261</height>
      </rect>
     </property>
    </widget>
@@ -6948,6 +6948,45 @@
      <string/>
     </property>
    </widget>
+   <widget class="QPushButton" name="pushButton_3">
+    <property name="geometry">
+     <rect>
+      <x>320</x>
+      <y>40</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>确定</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_4">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>40</y>
+      <width>71</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>确定</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="pushButton_5">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>580</y>
+      <width>781</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>发送邮件</string>
+    </property>
+   </widget>
    <zorder>label_36</zorder>
    <zorder>label_hp1</zorder>
    <zorder>label</zorder>
@@ -7017,6 +7056,9 @@
    <zorder>label_ba2</zorder>
    <zorder>label_ba3</zorder>
    <zorder>label_ba4</zorder>
+   <zorder>pushButton_3</zorder>
+   <zorder>pushButton_4</zorder>
+   <zorder>pushButton_5</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
