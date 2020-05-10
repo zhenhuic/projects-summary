@@ -179,8 +179,8 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.titlelabel.setText(_translate("MainWindow", "老板电器智能装箱检测系统"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "生产场景中目标的自动检测"))
+        self.titlelabel.setText(_translate("MainWindow", "生产场景中目标的自动检测"))
         self.logTitle.setText(_translate("MainWindow", " 实时检测信息"))
         self.recordTitle.setText(_translate("MainWindow", " 异常记录"))
         self.streammenu.setTitle(_translate("MainWindow", "视频流"))
