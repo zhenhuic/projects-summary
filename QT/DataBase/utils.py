@@ -18,21 +18,25 @@ class Utils:
             name) + "'order by SJ asc;"
         cursor.execute(sql)
         selectAll = cursor.fetchall()
-        listAll = []
-        cost = 0
+        listE = []
         for each in selectAll:
-            listAll.append(int(each[1].split('分钟')[0]))
-        for eachE in listAll:
-            if listAll.index(eachE) - 1 < 0:
-                front = 0
-            else:
-                front = listAll[listAll.index(eachE) - 1]
-            if listAll.index(eachE) + 1 > len(listAll) - 1:
-                behind = 0
-            else:
-                behind = listAll[listAll.index(eachE) + 1]
-            if eachE >= front and eachE >= behind:
-                cost += eachE
+            listE.append(int(each[1].split('分钟')[0]))
+        cost = 0
+        if len(listE) != 0:
+            temp = listE[0]
+            front = 0
+            rear = 0
+            for eachE in listE[1:]:
+                if eachE >= temp:
+                    temp = eachE
+                    rear += 1
+                else:
+                    cost += (rear - front) * 5
+                    front = rear + 1
+                    rear = front
+                    temp = eachE
+            if rear != front:
+                cost += (rear - front) * 5
         return cost
 
     def selectSingleFrequencyAndTimeCostByName(self, name):
@@ -58,18 +62,22 @@ class Utils:
                 if each[0] == i:
                     listE.append(each[1])
             if len(listE) != 0:
-                for eachE in listE:
-                    if listE.index(eachE) - 1 < 0:
-                        front = 0
+                front = 0
+                rear = 1
+                temp = listE[0]
+                for eachE in listE[1:]:
+                    if eachE >= temp:
+                        temp = eachE
+                        rear += 1
                     else:
-                        front = listE[listE.index(eachE) - 1]
-                    if listE.index(eachE) + 1 > len(listE) - 1:
-                        behind = 0
-                    else:
-                        behind = listE[listE.index(eachE) + 1]
-                    if eachE >= front and eachE >= behind:
+                        cost += (rear - front) * 5
+                        front = rear + 1
+                        rear = front
                         count += 1
-                        cost += eachE
+                        temp = eachE
+                if front != rear:
+                    cost += (rear - front) * 5
+                    count += 1
             resultList.insert(0, [i, count, cost])
         return resultList
 
@@ -127,4 +135,4 @@ class Utils:
 
 if __name__ == '__main__':
     utils = Utils()
-    utils.selectMultipleFrequencyOfWeek()
+    utils.selectSingleFrequencyAndTimeCostByName('OP30厚度检测气缸伸出未到位')
