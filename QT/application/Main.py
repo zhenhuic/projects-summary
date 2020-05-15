@@ -8,8 +8,6 @@
 
 from Database.utils import *
 from QTDesigner.delete import Ui_Dialog_delete
-from QTDesigner.fetch import Ui_Dialog_fetch
-
 from QTDesigner.main import *
 from QTDesigner.add import *
 import matplotlib
@@ -25,14 +23,15 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import matplotlib.ticker as mtick
 from matplotlib.font_manager import FontProperties
-
-from QTDesigner.reporter import Ui_Dialog_reporter
-from draw.myFigure import MyFigure
-
 warnings.filterwarnings("ignore")
 matplotlib.use("Qt5Agg")  # 声明使用QT5
-# plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
+class MyFigure(FigureCanvas):
+    def __init__(self, width=4, height=5, dpi=100):
+        self.fig = Figure(figsize=(width, height), dpi=dpi)
+        super(MyFigure, self).__init__(self.fig)  # 此句必不可少，否则不能显示图形
+        self.ax1 = self.fig.add_subplot(111)
 
 
 class Main(Ui_MainWindow):
@@ -74,8 +73,7 @@ class Main(Ui_MainWindow):
     def settingSettingQActionFunction(self):
         getattr(self, "setting_1").triggered.connect(lambda: self.actionAdd())
         getattr(self, "setting_2").triggered.connect(lambda: self.actionDelete())
-        getattr(self, "setting_3").triggered.connect(lambda: self.actionFetch())
-        getattr(self, "setting_4").triggered.connect(lambda: self.actionExit())
+        getattr(self, "setting_3").triggered.connect(lambda: self.actionExit())
 
 
 
@@ -87,7 +85,7 @@ class Main(Ui_MainWindow):
             if reply == QMessageBox.Ok:
                 self.mainWindow.close()
                 self.mainWindow.destroy()
-
+                a = Main()
 
     def actionDelete(self):
         dialog = Ui_Dialog_delete()
@@ -97,10 +95,7 @@ class Main(Ui_MainWindow):
             if reply == QMessageBox.Ok:
                 self.mainWindow.close()
                 self.mainWindow.destroy()
-
-
-    def actionFetch(self):
-        dialog = Ui_Dialog_reporter()
+                a = Main()
 
     def actionExit(self):
         self.mainWindow.close()
@@ -130,7 +125,7 @@ class Main(Ui_MainWindow):
         graphicscene.addWidget(fig)
         self.graphicsView_1_today.setScene(graphicscene)
         self.graphicsView_1_today.show()
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+        # plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 
     def drawSingleFrequencyAndTime(self, singleFrequencyAndTime, name):
         """
@@ -146,7 +141,7 @@ class Main(Ui_MainWindow):
         l = [i for i in range(7)]
         for i, (_x, _y) in enumerate(zip(l, count)):
             fig.ax1.text(_x + 0.1, _y + 0.1, count[i], color='red', fontsize=10)  # 将数值显示在图形上
-        plt.rcParams['font.sans-serif'] = ['StimHei']  # 用来正常显示中文标签
+        # plt.rcParams['font.sans-serif'] = ['StimHei']  # 用来正常显示中文标签
         lx = [u'0', u'1', u'2', u'3', u'4', u'5', u'6']
         today = datetime.datetime.now()
         today_0 = (today + datetime.timedelta(days=0)).strftime("%m-%d")
@@ -176,11 +171,13 @@ class Main(Ui_MainWindow):
         graphicscene.addWidget(fig)
         self.graphicsView_1_week.setScene(graphicscene)
         self.graphicsView_1_week.show()
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+        # plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 
     def actionSearchMultiple(self, component):
-
-        name = component.title()
+        if component.title() == "系统故障":
+            name = "系统故障"
+        else:
+            name = component.title()
         self.drawMultipleFrequencyOfToday(name)
         self.drawMultipleFrequencyOfWeek(name)
 
@@ -211,7 +208,7 @@ class Main(Ui_MainWindow):
         graphicscene.addWidget(fig)
         self.graphicsView_2_frequency.setScene(graphicscene)
         self.graphicsView_2_frequency.show()
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+        # plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 
     def drawMultipleFrequencyOfWeek(self, name):
         """
@@ -241,17 +238,12 @@ class Main(Ui_MainWindow):
         graphicscene.addWidget(fig)
         self.graphicsView_2_week.setScene(graphicscene)
         self.graphicsView_2_week.show()
-        plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
-
-def except_hook(cls, exception, traceback):
-    sys.__excepthook__(cls, exception, traceback)
+        # plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
 
 
 
 
 if __name__ == '__main__':
-    sys.excepthook = except_hook  # print the traceback to stdout/stderr
-
     app = QApplication(sys.argv)
 
     a = Main()

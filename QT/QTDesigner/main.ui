@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1204</width>
+    <height>801</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QTabWidget" name="tabWidget">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>0</y>
+      <width>1181</width>
+      <height>751</height>
+     </rect>
+    </property>
+    <property name="currentIndex">
+     <number>0</number>
+    </property>
+    <widget class="QWidget" name="tab_1">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <attribute name="title">
+      <string>局部点位</string>
+     </attribute>
+     <widget class="QGraphicsView" name="graphicsView_1_today">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>571</width>
+        <height>711</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_1_week">
+      <property name="geometry">
+       <rect>
+        <x>600</x>
+        <y>0</y>
+        <width>571</width>
+        <height>711</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QWidget" name="tab_2">
+     <attribute name="title">
+      <string>整体点位</string>
+     </attribute>
+     <widget class="QGraphicsView" name="graphicsView_2_week">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>360</y>
+        <width>1151</width>
+        <height>361</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QGraphicsView" name="graphicsView_2_frequency">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>-10</y>
+        <width>1151</width>
+        <height>361</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1204</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="Transducer">
+    <property name="title">
+     <string>变频器</string>
+    </property>
+    <addaction name="transducer_1"/>
+    <addaction name="transducer_2"/>
+    <addaction name="transducer_3"/>
+    <addaction name="transducer_4"/>
+   </widget>
+   <widget class="QMenu" name="OP20">
+    <property name="title">
+     <string>OP20</string>
+    </property>
+    <addaction name="OP20_1"/>
+    <addaction name="OP20_2"/>
+    <addaction name="OP20_3"/>
+    <addaction name="OP20_4"/>
+    <addaction name="OP20_5"/>
+    <addaction name="OP20_6"/>
+    <addaction name="OP20_7"/>
+    <addaction name="OP20_8"/>
+    <addaction name="OP20_9"/>
+    <addaction name="OP20_10"/>
+    <addaction name="OP20_11"/>
+    <addaction name="OP20_12"/>
+   </widget>
+   <widget class="QMenu" name="OP30">
+    <property name="title">
+     <string>OP30</string>
+    </property>
+    <addaction name="OP30_1"/>
+    <addaction name="OP30_2"/>
+    <addaction name="OP30_3"/>
+   </widget>
+   <widget class="QMenu" name="OP40">
+    <property name="title">
+     <string>OP40</string>
+    </property>
+    <addaction name="OP40_1"/>
+    <addaction name="OP40_2"/>
+    <addaction name="OP40_3"/>
+    <addaction name="OP40_4"/>
+    <addaction name="OP40_5"/>
+    <addaction name="OP40_6"/>
+   </widget>
+   <widget class="QMenu" name="systemError">
+    <property name="title">
+     <string>系统故障</string>
+    </property>
+    <addaction name="systemError_1"/>
+    <addaction name="systemError_2"/>
+   </widget>
+   <widget class="QMenu" name="setting">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="setting_1"/>
+    <addaction name="setting_2"/>
+    <addaction name="setting_3"/>
+   </widget>
+   <addaction name="Transducer"/>
+   <addaction name="OP20"/>
+   <addaction name="OP30"/>
+   <addaction name="OP40"/>
+   <addaction name="systemError"/>
+   <addaction name="setting"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="transducer_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>1号变频器故障反馈</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="transducer_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>2号变频器故障反馈</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="transducer_3">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>3号变频器故障反馈</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="transducer_4">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>4号变频器故障反馈</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20侧气压低</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20冲床报警</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_3">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20冲床靠山气缸伸出未到位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_4">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20冲床靠山气缸缩回未到位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_5">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20夹钳状态报警</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_6">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20安全门未锁</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_7">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20小车1码垛数量达到上限</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_8">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20小车2码垛数量达到上限</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_9">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20料塔端定位气缸1伸出未到位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_10">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20料塔端定位气缸2伸出未到位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_11">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20机器人急停</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP20_12">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP20机器人故障</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP30_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP30机器人急停</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP30_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP30机器人故障</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP30_3">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP30码垛产品不一致</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40安全门未锁</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40宽度检测气缸缩回未到位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_3">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40急停</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_4">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40机器人故障</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_5">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40机器人码垛上限到</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="systemError_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>码垛产品不一致</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="systemError_2">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>系统急停</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="OP40_6">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>OP40码垛产品不一致</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="setting_1">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>增加点位</string>
+   </property>
+   <property name="whatsThis">
+    <string/>
+   </property>
+  </action>
+  <action name="setting_2">
+   <property name="text">
+    <string>删除点位</string>
+   </property>
+  </action>
+  <action name="setting_3">
+   <property name="text">
+    <string>退出</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
