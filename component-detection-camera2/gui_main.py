@@ -1,12 +1,16 @@
+import datetime
 import sys
 import time
 
-from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot
+from PyQt5.QtCore import QThread, pyqtSignal, pyqtSlot, QDateTime, QDate
 from PyQt5.QtWidgets import QMainWindow, QApplication
 from PyQt5.QtGui import QImage, QPixmap
 
 from gui.main_window import Ui_MainWindow
+from gui.statistics_widget import Ui_StatisticsWindow
 from detect_main import main
+from sql.database import DbManager, draw_bar_chart, draw_bar_graph
+from util import array_to_QImage
 
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -29,6 +33,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.stream_1.triggered.connect(self.switch_vis_stream_1)
         self.stream_2.triggered.connect(self.switch_vis_stream_2)
         self.stop.triggered.connect(self.process_exit)
+        self.openStatistics.triggered.connect(self.open_statistics_window)
+        self.statistics_window = None
+
+    @pyqtSlot(bool)
+    def open_statistics_window(self, trigger):
+        self.statistics_window = StatisticsWindow()
+        self.statistics_window.show()
 
     @pyqtSlot(QImage)
     def set_frame(self, image):
@@ -75,6 +86,37 @@ class DetectionThread(QThread):
     def run(self):
         pass
         main(self)
+
+
+class StatisticsWindow(QMainWindow, Ui_StatisticsWindow):
+    def __init__(self):
+        super().__init__()
+        self.setupUi(self)
+
+        self.pushButton.clicked.connect(self.select_records)
+        self.productionLineComboBox.setCurrentIndex(0)
+        self.startDateEdit.setDate(QDate.currentDate().addDays(-1))
+        self.endDateEdit.setDate(QDate.currentDate())
+        self.db_manager = DbManager()
+
+
+
+
+    @pyqtSlot(bool)
+    def select_records(self, trigger):
+        start_datetime = self.startDateEdit.date().toPyDate()
+        end_datetime = self.endDateEdit.date().toPyDate()
+        print(start_datetime)
+
+        start_datetime = start_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        end_datetime = end_datetime.strftime("%Y-%m-%d %H:%M:%S")
+
+        names = ["风管放入个数", "小包组件放入个数", "投放成功次数", "投放失败次数"]
+        data = self.db_manager.count_records_between_datetime("pack", start_datetime, end_datetime)
+
+        img = draw_bar_graph(names, data)
+        qimg = array_to_QImage(img, self.graphLabel.size())
+        self.graphLabel.setPixmap(QPixmap.fromImage(qimg))
 
 
 def except_hook(cls, exception, traceback):

@@ -273,8 +273,15 @@ color: rgb(255, 255, 255);</string>
     <addaction name="start"/>
     <addaction name="stop"/>
    </widget>
+   <widget class="QMenu" name="statisticsMenu">
+    <property name="title">
+     <string>统计</string>
+    </property>
+    <addaction name="openStatistics"/>
+   </widget>
    <addaction name="programmenu"/>
    <addaction name="streammenu"/>
+   <addaction name="statisticsMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="styleSheet">
@@ -325,6 +332,11 @@ color: rgb(255, 255, 255);</string>
   <action name="action_4">
    <property name="text">
     <string>工位4</string>
+   </property>
+  </action>
+  <action name="openStatistics">
+   <property name="text">
+    <string>配件投放统计</string>
    </property>
   </action>
  </widget>

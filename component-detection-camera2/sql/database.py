@@ -1,8 +1,18 @@
 #!/usr/bin/env python
 # coding:UTF-8
+import io
+
+import cv2
 import pymysql
 import logging
 import sys
+import matplotlib.pyplot as plt
+from matplotlib.font_manager import FontManager
+from matplotlib.ticker import MaxNLocator
+from pylab import mpl
+import subprocess
+import numpy as np
+import datetime
 
 # 加入日志
 # 获取logger实例
@@ -24,10 +34,68 @@ logger.addHandler(console_handler)
 logger.setLevel(logging.INFO)
 
 
+def fig2img(fig, dpi=180):
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png", dpi=dpi)
+    buf.seek(0)
+    img_arr = np.frombuffer(buf.getvalue(), dtype=np.uint8)
+    buf.close()
+    img = cv2.imdecode(img_arr, 1)
+    return img
+
+
+# 绘制表格
+def draw_bar_chart(data: [int]):
+
+    # 第三：绘制图形
+
+    # 中文显示设置
+    plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来正常显示中文标签
+    plt.rcParams['axes.unicode_minus'] = False  # 用来正常显示负号
+
+    width = 0.3
+    # index = np.arange(len(sname))
+
+    rr = plt.bar("风管放入个数", data[0], width, color='r', label="风管放入个数")
+    rr = plt.bar("小包组件放入个数", data[1], width, color='r', label="小包组件放入个数")
+    rr = plt.bar("投放成功次数", data[2], width, color='b', label="投放成功次数")
+    rr = plt.bar("投放失败次数", data[3], width, color='c', label="投放失败次数")
+
+    # r1 = plt.bar(sname, chinese, width, color='r', label='chinese')
+    # r2 = plt.bar(index + width, math, width, color='b', label='math')
+    # r3 = plt.bar(index + width + width, english, width, color='c', label='english')
+
+    # 显示图像
+    # plt.legend()
+    # plt.show()
+
+    # 关闭
+    # self.cur.close()
+    # self.db.close()
+    return fig2img(rr)
+
+
+def draw_bar_graph(names: [str], values: [int]) -> np.ndarray:
+    from pylab import mpl
+    mpl.rcParams['font.sans-serif'] = ['SimHei']  # 指定默认字体
+    mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
+
+    fig, ax = plt.subplots()
+    ax.bar(names, values)
+    # ax.set_facecolor("darkgray")
+    plt.xticks(fontsize=10)
+    # ax.set_title("")
+    # ax.set_xlabel('')
+    ax.set_ylabel('投放记录次数')
+    ax.yaxis.set_major_locator(MaxNLocator(integer=True))
+    img = fig2img(fig)
+    return img
+
+
 class DbManager:
     # 构造函数
     def __init__(self, host='localhost', port=3306, user='root',
-                 passwd='pj19961128!', db='test', charset='utf8'):
+                 passwd='123456', db='object_detection', charset='utf8'):
         self.host = host
         self.port = port
         self.user = user
@@ -36,14 +104,15 @@ class DbManager:
         self.charset = charset
         self.conn = None
         self.cur = None
+        self.x = [0, 1, 2, 3, 4]
 
     # 连接数据库
     def connectDatabase(self):
         try:
             self.conn = pymysql.connect(host=self.host, port=self.port, user=self.user, passwd=self.passwd, db=self.db,
                                         charset=self.charset)
-        except:
-            logger.error("connectDatabase failed")
+        except Exception:
+            logger.error("connect Database failed")
             return False
         self.cur = self.conn.cursor()
         return True
@@ -56,93 +125,44 @@ class DbManager:
             self.conn.close()
         return True
 
-    # 创建一个数据库
-    def creat_table(self):
-        res = self.connectDatabase()
-        sql_createTb = """CREATE TABLE PACK (
-                         packing_id INT NOT NULL AUTO_INCREMENT,
-                         data CHAR(100),
-                         component1  INT ,
-                         component2 INT,
-                         component3 INT,
-                         success INT ,
-                         PRIMARY KEY(packing_id))
-                         """
-        self.cur.execute(sql_createTb)
+    def count_records_between_datetime(self, table: str, start: str, end: str) -> [int]:
+        if not self.connectDatabase():
+            raise RuntimeError("数据库连接失败！")
 
-    # 执行数据库的sq语句,主要用来做插入操作
-    def execute(self, sql, params=None, commit=False):
-        # 连接数据库
-        res = self.connectDatabase()
-        if not res:
-            return False
-        try:
-            if self.conn and self.cur:
-                # 正常逻辑，执行sql，提交操作
-                rowcount = self.cur.execute(sql, params)
-                # print(rowcount)
-                if commit:
-                    self.conn.commit()
-                else:
-                    pass
-        except:
-            logger.error("execute failed: " + sql)
-            logger.error("params: " + str(params))
-            self.close()
-            return False
-        return rowcount
+        com1_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND component1=1".format(table, start, end)
+        com2_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND component2=1".format(table, start, end)
+        suc_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND success=1".format(table, start, end)
+        fail_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND success=0".format(table, start, end)
+        print(com1_sql)
+        self.cur.execute(com1_sql)
+        com1_cnt = int(self.cur.fetchone()[0])
 
-    # 查询所有数据
-    def fetchall(self, sql, params=None):
-        res = self.execute(sql, params)
-        if not res:
-            logger.info("查询失败")
-            return False
-        self.close()
-        results = self.cur.fetchall()
-        logger.info("查询成功" + str(results))
-        return results
+        self.cur.execute(com2_sql)
+        com2_cnt = int(self.cur.fetchone()[0])
 
-    # 查询一条数据
-    def fetchone(self, sql, params=None):
-        res = self.execute(sql, params)
-        if not res:
-            logger.info("查询失败")
-            return False
-        self.close()
-        result = self.cur.fetchone()
-        logger.info("查询成功" + str(result))
-        return result
+        self.cur.execute(suc_sql)
+        suc_cnt = int(self.cur.fetchone()[0])
 
-    # 增删改数据
-    def edit(self, sql, params=None):
-        res = self.execute(sql, params, True)
-        if not res:
-            logger.info("操作失败")
-            return False
-        self.conn.commit()
-        self.close()
-        logger.info("操作成功" + str(res))
-        return res
+        self.cur.execute(fail_sql)
+        fail_cnt = int(self.cur.fetchone()[0])
+        return com1_cnt, com2_cnt, suc_cnt, fail_cnt
+
     # 根据零件的投放情况来选择要插入数据库的信息，其中com1表示桶，com2表示箱子
-    def choose_sql_and_insert(self, sqlstr, com1, com2, com3, success):
-        sqlstr = sqlstr + str(com1) + ',' + str(com2) + ',' + str(com3) + ',' + str(success) + ')'
+    def choose_sql_and_insert(self, com1: int, com2: int, com3: int, success: int):
+        try:
+            dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            sql = "INSERT INTO pack(date, component1, component2, component3, success) values ('{}',{},{},{},{})".\
+                format(dt, str(com1), str(com2), str(com3), str(success))
+            # print(sql)
+            self.cur.execute(sql)
+            self.conn.commit()
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
 
-        self.execute(sql=sqlstr, params=None, commit=True)
 
 
 if __name__ == '__main__':
     dbManager = DbManager()
-    """
-    sql = "select * from bandcard WHERE money>%s;"
-    values = [1000]
-    result = dbManager.fetchall(sql, values)
-    """
-    qqq = 1
-    sql1 = "insert into PACK1(data,component1,component2,component3,success) values(Now(),"+str(qqq)+",1,1,0)"
-
-    # values = [(0, 100), (0, 200), (0, 300)]
-    # result = dbManager.edit(sql, values)
-    # dbManager.creat_table()
-    # dbManager.execute(sql=sql1, params=None, commit=True)
-    dbManager.choose_sql_and_insert(sql1, 1, 1, 1, 1)
+    dbManager.connectDatabase()
+    dbManager.choose_sql_and_insert(0, 0, 0, 0)

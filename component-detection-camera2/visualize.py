@@ -36,25 +36,28 @@ class Visualize:
 
         # PIL图片上打印汉字
         draw = ImageDraw.Draw(img)  # 图片上打印
-        font = ImageFont.truetype("simhei.ttf", 20, encoding="utf-8")
+        font = ImageFont.truetype("simhei.ttf", 34, encoding="utf-8")
         draw.text(coord, contents, color, font=font)
 
         # PIL 图片转 cv2 图片
         img_array = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2BGR)
         return img_array
 
-    def draw(self, img, flage_component1, flage_component2, fps):
-        #print(fps)
-        #img = self.draw_fps(img, fps)
-        img = cv2.putText(img, text=fps, org=(100, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                fontScale =1, color=(255, 200, 0), thickness=2)
-        if flage_component1 == 1:
-            img = cv2.putText(img, text='buket get', org=(1000, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                              fontScale=1.2, color=(255, 255, 0), thickness=2)
-        if flage_component2 == 1:
-            img = cv2.putText(img, text='box get', org=(1000, 58), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                                  fontScale=1.2, color=(0, 255, 0), thickness=2)
-        if flage_component1 == -1 and flage_component2 == -1:
-            img = cv2.putText(img, text='packing  failed', org=(1000, 91), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
-                              fontScale=1.2, color=(0, 0, 255), thickness=2)
-        return img
+    # def draw(self, img, flage_component1, flage_component2, fps):
+    #     #print(fps)
+    #     #img = self.draw_fps(img, fps)
+    #     img = cv2.putText(img, text=fps, org=(100, 30), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+    #                             fontScale =1, color=(255, 200, 0), thickness=2)
+    #     if flage_component1 == 1:
+    #
+    #         # img = draw_Chinese_words(img, "智能安全监测系统", (20, 400))
+    #
+    #         img = cv2.putText(img, text='buket get', org=(1000, 25), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+    #                           fontScale=1.2, color=(255, 255, 0), thickness=2)
+    #     if flage_component2 == 1:
+    #         img = cv2.putText(img, text='box get', org=(1000, 58), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+    #                               fontScale=1.2, color=(0, 255, 0), thickness=2)
+    #     if flage_component1 == -1 and flage_component2 == -1:
+    #         img = cv2.putText(img, text='packing  failed', org=(1000, 91), fontFace=cv2.FONT_HERSHEY_SIMPLEX,
+    #                           fontScale=1.2, color=(0, 0, 255), thickness=2)
+    #     return img

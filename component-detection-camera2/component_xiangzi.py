@@ -2,6 +2,8 @@ import cv2 as cv
 import numpy as np
 
 
+
+
 def nextrace_object_demo(frame):
     '''
     在图片上只留下指定的一种颜色(黄色)
@@ -13,11 +15,10 @@ def nextrace_object_demo(frame):
     lower_hsv = np.array([15, 163, 30])  # 设置过滤的颜色的低值
     upper_hsv = np.array([55, 255, 175])  # 设置过滤的颜色的高值
 
-    #lower_hsv = np.array([15, 200, 30])  # 设置过滤的颜色的低值
-    #upper_hsv = np.array([55, 255, 175])  # 设置过滤的颜色的高值
     mask = cv.inRange(hsv, lower_hsv, upper_hsv)  # 调节图像颜色信息（H）、饱和度（S）、亮度（V）区间，选择白色区域
-    mask = cv.bitwise_and(frame, frame, mask=mask)
 
+    mask = cv.bitwise_and(frame, frame, mask=mask)
+    #cv.imshow("mask", mask)
     return mask
 
 
@@ -39,14 +40,20 @@ if __name__ == '__main__':
     mask = cv.imread('mask/mask_xiangzi.jpg')
     image = cv.imread('mask/test2.jpg')
     #xiangzi_detect(image, mask)
-
-    capture = cv.VideoCapture("D:/laoban/2019-10-313.mp4")
+    video_path = "./2019-10-31.mp4"
+    capture = cv.VideoCapture(video_path)
     while True:
         ret, frame = capture.read()
-        xiangzi_detect(frame, mask)
+        frame_720 = cv.resize(frame, (1280, 720))
+        # xiangzi_detect(frame_720, mask)
+
+
+        mask_white = nextrace_object_demo_mask(frame_720)
+        image_trck = box_tracking(image, frame_720)
+        cv.imshow("trck",image_trck)
+
         cv.waitKey(0)
         if cv.waitKey(1) & 0xFF == ord('q'):
             break
-
 
 

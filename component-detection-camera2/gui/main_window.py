@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'main_window.ui'
+# Form implementation generated from reading ui file 'E:\Lab417\xio-intrusion-detection\configs\main_window.ui'
 #
-# Created by: PyQt5 UI code generator 5.9.2
+# Created by: PyQt5 UI code generator 5.14.0
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -129,6 +131,8 @@ class Ui_MainWindow(object):
         self.streammenu.setObjectName("streammenu")
         self.programmenu = QtWidgets.QMenu(self.menubar)
         self.programmenu.setObjectName("programmenu")
+        self.statisticsMenu = QtWidgets.QMenu(self.menubar)
+        self.statisticsMenu.setObjectName("statisticsMenu")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setStyleSheet("background-color: rgb(30, 30, 30);\n"
@@ -153,12 +157,16 @@ class Ui_MainWindow(object):
         self.action_3.setObjectName("action_3")
         self.action_4 = QtWidgets.QAction(MainWindow)
         self.action_4.setObjectName("action_4")
+        self.openStatistics = QtWidgets.QAction(MainWindow)
+        self.openStatistics.setObjectName("openStatistics")
         self.streammenu.addAction(self.action_1)
         self.streammenu.addAction(self.action_2)
         self.programmenu.addAction(self.start)
         self.programmenu.addAction(self.stop)
+        self.statisticsMenu.addAction(self.openStatistics)
         self.menubar.addAction(self.programmenu.menuAction())
         self.menubar.addAction(self.streammenu.menuAction())
+        self.menubar.addAction(self.statisticsMenu.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -166,11 +174,12 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.titlelabel.setText(_translate("MainWindow", "老板电器智能装箱检测系统"))
+        self.titlelabel.setText(_translate("MainWindow", "生产场景中目标的自动检测"))
         self.logTitle.setText(_translate("MainWindow", " 实时检测信息"))
         self.recordTitle.setText(_translate("MainWindow", " 异常记录"))
         self.streammenu.setTitle(_translate("MainWindow", "视频流"))
         self.programmenu.setTitle(_translate("MainWindow", "程序"))
+        self.statisticsMenu.setTitle(_translate("MainWindow", "统计"))
         self.stream_1.setText(_translate("MainWindow", "厚板线"))
         self.stream_2.setText(_translate("MainWindow", "下折弯"))
         self.stream_3.setText(_translate("MainWindow", "上喷粉"))
@@ -180,4 +189,4 @@ class Ui_MainWindow(object):
         self.action_2.setText(_translate("MainWindow", "工位2"))
         self.action_3.setText(_translate("MainWindow", "工位3"))
         self.action_4.setText(_translate("MainWindow", "工位4"))
-
+        self.openStatistics.setText(_translate("MainWindow", "配件投放统计"))

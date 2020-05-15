@@ -1,2 +1,13 @@
 2019-11-18 21:20:07,766              ERROR   :execute failed: insert into PACK(data,component1,component2,component3,success) values(Now(),1,1,0,1)
 2019-11-18 21:20:07,766              ERROR   :params: None
+2020-05-12 10:36:16,003              ERROR   :execute failed: insert into pack(data,component1,component2,component3,success) values(Now(),1,1,0,1)
+2020-05-12 10:36:16,003              ERROR   :params: None
+2020-05-12 10:36:48,494              ERROR   :execute failed: insert into pack(data,component1,component2,component3,success) values(Now(),1,1,0,1)
+2020-05-12 10:36:48,495              ERROR   :params: None
+2020-05-14 19:56:29,431              ERROR   :execute failed: SELECT count(*) FROM pack WHERE datetime >= '2000-01-01' AND datetime <= '2020-01-01'
+2020-05-14 19:56:29,431              ERROR   :params: None
+2020-05-14 20:02:39,412              ERROR   :execute failed: SELECT count(*) FROM pack WHERE datetime >= '2000-01-01' AND datetime <= '2000-01-01'
+2020-05-14 20:02:39,412              ERROR   :params: None
+2020-05-14 20:20:25,446              ERROR   :execute failed: SELECT count(*) FROM pack WHERE datetime >= '2000-01-01' AND datetime <= '2000-01-01'
+2020-05-14 20:20:25,446              ERROR   :params: None
+2020-05-15 22:02:34,812              ERROR   :connect Database failed

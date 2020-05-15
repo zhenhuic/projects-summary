@@ -34,11 +34,14 @@ if __name__ == '__main__':
     mask = cv.imread('mask/mask_lvtong.jpg')
     image = cv.imread('mask/test.jpg')
     #lvtong_detect(image, mask)
-
-    capture = cv.VideoCapture("D:/laoban/2019-10-312.mp4")
+    video_path = "./2019-10-31.mp4"
+    capture = cv.VideoCapture(video_path)
     while True:
         ret, frame = capture.read()
-        lvtong_detect(frame, mask)
+
+        frame_720 = cv.resize(frame, (1280, 720))
+
+        lvtong_detect(frame_720, mask)
         cv.waitKey(0)
         #print(1)
         if cv.waitKey(1) & 0xFF == ord('q'):
