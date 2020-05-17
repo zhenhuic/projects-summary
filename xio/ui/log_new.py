@@ -401,7 +401,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "生产线报警智能检测分析系统"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "日志数据的度量和自动抽取系统"))
         self.comboBox.setItemText(0, _translate("MainWindow", "厚板线"))
         self.comboBox.setItemText(1, _translate("MainWindow", "侧板焊接线"))
         self.comboBox.setItemText(2, _translate("MainWindow", "新萨瓦尼尼线"))
@@ -420,7 +420,7 @@ class Ui_MainWindow(object):
         self.comboBox_4.setItemText(2, _translate("MainWindow", "正常条数"))
         self.pushButton_2.setText(_translate("MainWindow", "生成统计图表"))
         self.comboBox_5.setItemText(0, _translate("MainWindow", "日平均(7日)"))
-        self.comboBox_5.setItemText(1, _translate("MainWindow", "周平均(30日)"))
+        self.comboBox_5.setItemText(1, _translate("MainWindow", "周平均(28日)"))
         self.pushButton_3.setText(_translate("MainWindow", "确定"))
         self.menu_F.setTitle(_translate("MainWindow", "文件(F)"))
         self.menu_T.setTitle(_translate("MainWindow", "工具(T)"))

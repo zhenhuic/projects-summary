@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1440</width>
+    <width>1404</width>
     <height>856</height>
    </rect>
   </property>
@@ -32,7 +32,7 @@ background-color: rgb(61, 61, 61);
 font: 75 10pt &quot;Aharoni&quot;;</string>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -123,11 +123,6 @@ font: 75 10pt &quot;Aharoni&quot;;</string>
       <string notr="true">color: rgb(255, 255, 255);</string>
      </property>
     </widget>
-   </widget>
-   <widget class="QWidget" name="tab_2">
-    <attribute name="title">
-     <string>管理中心</string>
-    </attribute>
    </widget>
    <widget class="QWidget" name="tab_3">
     <attribute name="title">

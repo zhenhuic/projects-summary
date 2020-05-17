@@ -10,7 +10,7 @@ class Figure_Origin():
     '''
 
     def __init__(self):
-        self.figure = plt.figure(figsize=(6.2, 4), facecolor='lightgoldenrodyellow')  # 等下继承一个父类
+        self.figure = plt.figure(figsize=(4.9, 3.2), facecolor='lightgoldenrodyellow')  # 等下继承一个父类
         self.canvas = FigureCanvas(self.figure)
 
     def plot(self, *args, **kwargs):
@@ -167,6 +167,5 @@ class Figure_Pie(Figure_Origin):
 
 
 if __name__ == "__main__":
-    fo=Figure_OEE()
-    fo.plot((1,1,1,1))
-
+    fo = Figure_OEE()
+    fo.plot((1, 1, 1, 1))

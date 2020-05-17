@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'xio_all.ui'
+# Form implementation generated from reading ui file 'xio_all_ui_mail_select.ui'
 #
 # Created by: PyQt4 UI code generator 4.11.4
 #
@@ -25,42 +25,45 @@ except AttributeError:
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName(_fromUtf8("Form"))
-        Form.resize(1613, 994)
+        Form.resize(1280, 856)
         Form.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);\n"
 "background-color: rgb(61, 61, 61);\n"
 ""))
         self.tabWidget = QtGui.QTabWidget(Form)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 109, 1561, 831))
+        self.tabWidget.setGeometry(QtCore.QRect(10, 109, 1421, 741))
         self.tabWidget.setStyleSheet(_fromUtf8("color: rgb(49, 49, 49);\n"
 "font: 75 10pt \"Aharoni\";"))
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
         self.graphicsView_MT = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_MT.setGeometry(QtCore.QRect(80, 10, 511, 361))
+        self.graphicsView_MT.setGeometry(QtCore.QRect(60, 10, 480, 340))
         self.graphicsView_MT.setObjectName(_fromUtf8("graphicsView_MT"))
         self.graphicsView_OEE = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_OEE.setGeometry(QtCore.QRect(629, 10, 511, 361))
+        self.graphicsView_OEE.setGeometry(QtCore.QRect(550, 10, 480, 340))
         self.graphicsView_OEE.setObjectName(_fromUtf8("graphicsView_OEE"))
         self.graphicsView_Loss = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_Loss.setGeometry(QtCore.QRect(80, 399, 511, 371))
+        self.graphicsView_Loss.setGeometry(QtCore.QRect(60, 360, 480, 340))
         self.graphicsView_Loss.setObjectName(_fromUtf8("graphicsView_Loss"))
         self.graphicsView_Pie = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_Pie.setGeometry(QtCore.QRect(630, 399, 511, 371))
+        self.graphicsView_Pie.setGeometry(QtCore.QRect(550, 360, 480, 340))
         self.graphicsView_Pie.setObjectName(_fromUtf8("graphicsView_Pie"))
         self.label_2 = QtGui.QLabel(self.tab)
-        self.label_2.setGeometry(QtCore.QRect(1180, 260, 360, 240))
+        self.label_2.setGeometry(QtCore.QRect(1040, 260, 360, 240))
         self.label_2.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.label_2.setObjectName(_fromUtf8("label_2"))
         self.label = QtGui.QLabel(self.tab)
-        self.label.setGeometry(QtCore.QRect(1180, 10, 360, 240))
+        self.label.setGeometry(QtCore.QRect(1040, 10, 360, 240))
         self.label.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.label.setObjectName(_fromUtf8("label"))
         self.textBrowser = QtGui.QTextBrowser(self.tab)
-        self.textBrowser.setGeometry(QtCore.QRect(1180, 510, 361, 271))
+        self.textBrowser.setGeometry(QtCore.QRect(1040, 510, 361, 191))
         self.textBrowser.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);"))
         self.textBrowser.setObjectName(_fromUtf8("textBrowser"))
         self.tabWidget.addTab(self.tab, _fromUtf8(""))
+        self.tab_3 = QtGui.QWidget()
+        self.tab_3.setObjectName(_fromUtf8("tab_3"))
+        self.tabWidget.addTab(self.tab_3, _fromUtf8(""))
         self.line = QtGui.QFrame(Form)
         self.line.setGeometry(QtCore.QRect(10, 0, 1421, 20))
         self.line.setStyleSheet(_fromUtf8(""))
@@ -73,15 +76,24 @@ class Ui_Form(object):
         self.line_2.setFrameShadow(QtGui.QFrame.Sunken)
         self.line_2.setObjectName(_fromUtf8("line_2"))
         self.label_3 = QtGui.QLabel(Form)
-        self.label_3.setGeometry(QtCore.QRect(390, 30, 641, 41))
+        self.label_3.setGeometry(QtCore.QRect(390, 30, 451, 41))
         font = QtGui.QFont()
         font.setPointSize(25)
         self.label_3.setFont(font)
         self.label_3.setStyleSheet(_fromUtf8("color: rgb(255, 255, 255);"))
         self.label_3.setObjectName(_fromUtf8("label_3"))
+        self.fileSelectButton = QtGui.QPushButton(Form)
+        self.fileSelectButton.setGeometry(QtCore.QRect(40, 30, 93, 28))
+        self.fileSelectButton.setObjectName(_fromUtf8("fileSelectButton"))
+        self.pushButton_2 = QtGui.QPushButton(Form)
+        self.pushButton_2.setGeometry(QtCore.QRect(960, 830, 93, 28))
+        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
+        self.pushButton_3 = QtGui.QPushButton(Form)
+        self.pushButton_3.setGeometry(QtCore.QRect(150, 30, 93, 28))
+        self.pushButton_3.setObjectName(_fromUtf8("pushButton_3"))
 
         self.retranslateUi(Form)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(1)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
     def retranslateUi(self, Form):
@@ -89,5 +101,9 @@ class Ui_Form(object):
         self.label_2.setText(_translate("Form", "TextLabel", None))
         self.label.setText(_translate("Form", "TextLabel", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("Form", "主界面", None))
+        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Form", "月数据分析", None))
         self.label_3.setText(_translate("Form", "工厂侧板效率智能检测系统", None))
+        self.fileSelectButton.setText(_translate("Form", "文件选择", None))
+        self.pushButton_2.setText(_translate("Form", "PushButton", None))
+        self.pushButton_3.setText(_translate("Form", "PushButton", None))
 

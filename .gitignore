@@ -5,3 +5,4 @@
 component-detection-camera2/image/records
 projects-control-panel/
 xio-intrusion-detection/
+*.weights

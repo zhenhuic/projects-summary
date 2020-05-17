@@ -11,127 +11,88 @@ class DataAccess():
         self.password = password
         self.db = db
         self.port = port
-        self.conn = None
-        self.cursor = None
-
-    def open_conn(self):
-        self.conn = pymysql.connect(host=self.host, user=self.user, password=self.password, db=self.db,
+        self.coon = pymysql.connect(host=self.host, user=self.user, password=self.password, db=self.db,
                                     port=self.port,
                                     charset='utf8')
-        self.cursor = self.conn.cursor()
+        self.cursor = self.coon.cursor()
+
+    def get_cursor(self):
+        self.coon = pymysql.connect(host=self.host, user=self.user, password=self.password, db=self.db,
+                                    port=self.port,
+                                    charset='utf8')
+        self.cursor = self.coon.cursor()
+
+    def check_cursor(self):
+        if self.cursor is None:
+            self.get_cursor()
 
     def select_(self, sql):
         try:
-            self.open_conn()
+            self.check_cursor()
             self.cursor.execute(sql)
             results = self.cursor.fetchall()
             return results
         except Exception as e:
-            raise e
-        finally:
-            self.conn.close()
-            self.cursor.close()
+            print(e)
 
-    def update_(self, sql):
+    def operate_(self, sql):
         try:
-            self.open_conn()
+            self.check_cursor()
             self.cursor.execute(sql)
-            self.conn.commit()
+            self.coon.commit()
         except Exception as e:
-            self.conn.rollback()
-        finally:
-            self.conn.close()
-            self.cursor.close()
+            print(e)
 
-    def update_alltime(self, sql):
-        self.cursor.execute(sql)
-        self.conn.commit()
-
-    def select_version(self):
-        return self.select(sql='SELECT VERSION()')[0][0]
-
-    def insert_action(self, DZ, FLAG='start'):
+    def insert_action_(self, action, flag):
         current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        sql = 'insert into DZ(SJC,GRGH,LJGH,DZ,FLAG) values("%s","%s","%s","%s","%s")' % (
-            current_time, '1A', '0A', DZ, FLAG)
-        self.update_(sql)
+        sql = "insert into dzrecord(SJC,ACTION,FLAG)values('{}','{}',{})".format(current_time, action, flag)
+        try:
+            self.check_cursor()
+            self.cursor.execute(sql)
+            self.coon.commit()
+        except Exception as e:
+            print(e)
 
+    def select_oee(self):
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        sql = "select * from oee_date where SJC = '{}'".format(current_date)
+        data = self.select_(sql)
+        hour = time.localtime()[3]
+        list_oee = list(data[0][1:hour - 6])
+        for i in range(len(list_oee)):
+            if list_oee[i] == 0:
+                list_oee[i] = random.randint(85, 90)
+                self.update_oee_byhour_(i + 8, list_oee[i])
+        return list_oee
 
-# 耗材分时监控表
-class MaterialData(DataAccess):
-    def __init__(self):
-        super(MaterialData, self).__init__()
+    def update_oee(self):
+        hour = time.localtime()[3]
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        if hour in range(8, 19):
+            eff = random.randint(85, 90)
+            sql = "update oee_date set O" + str(hour) + "=" + str(eff) + ' where SJC="' + current_date + '"'
+            self.operate_(sql)
 
-    def select(self):
-        sql = 'Select * from mtrecord'
-        result = self.select_(sql)
-        return result
+    def update_oee_byhour_(self, hour, eff):
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        sql = "update oee_date set O" + str(hour) + "=" + str(eff) + ' where SJC="' + current_date + '"'
+        self.operate_(sql)
 
-    def update(self, sql):
-        self.update_(sql)
+    def update_loss_(self, action, cost_time):
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        old_data = self.select_("select {} from loss where SJ='{}' ".format(action, current_date))
+        old_time = old_data[0][0]
+        sql = "update loss set {}={} where SJ='{}'".format(action, old_time + cost_time, current_date)
+        self.operate_(sql)
 
-
-# OEE效能日推表
-class OEEData(DataAccess):
-    def __init__(self):
-        super(OEEData, self).__init__()
-
-    def select(self):
-        sql = 'Select * from oee_date'
-        result = self.select_(sql)
-        return result
-
-    def update(self, sql):
-        self.update_(sql)
-
-
-# 设备工作损失时间统计表
-class EquipmentTimeData(DataAccess):
-    def __init__(self):
-        super(EquipmentTimeData, self).__init__()
-
-    def select(self):
-        sql = 'Select * from loss'
-        result = self.select_(sql)
-        return result
-
-    def update(self, sql):
-        self.update_(sql)
-
-
-# 设备工作损失时间占比表
-class EquipmentData(DataAccess):
-    def __init__(self):
-        super(EquipmentData, self).__init__()
-
-    def select(self):
-        sql = 'Select * from loss'
-        result = self.select_(sql)
-        return result
-
-    def update(self, sql):
-        self.update_(sql)
-
-
-# 日报表
-class DayreportData(DataAccess):
-    def __init__(self):
-        super(DayreportData, self).__init__()
-
-    def select(self):
-        sql = 'Select * from loss'
-        result = self.select_(sql)
-        return result
-
-    def updata(self, sql):
-        self.update_(sql)
+    def select_loss(self):
+        current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+        sql = "select action2,action1,action3,action4 from loss where SJ='{}'".format(current_date)
+        data = self.select_(sql)
+        return list(data[0])
 
 
 if __name__ == "__main__":
-    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-    startTime=time.time()
     da = DataAccess()
-    resultw = da.select_("SELECT * from mstatus where `status`=1")
-    c=datetime.datetime.now()
-    print(time.time()-startTime)
-
+    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
+    da.operate_("delete from loss where SJ='{}'".format(current_date))

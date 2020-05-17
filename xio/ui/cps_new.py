@@ -2395,6 +2395,9 @@ class Ui_MainWindow(object):
         self.action_6.setObjectName("action_6")
         self.action_7 = QtWidgets.QAction(MainWindow)
         self.action_7.setObjectName("action_7")
+        self.action_8 = QtWidgets.QAction(MainWindow)
+        self.action_8.setObjectName("action_8")
+        self.menu_S.addAction(self.action_8)
         self.menubar.addAction(self.menu_F.menuAction())
         self.menubar.addAction(self.menu_T.menuAction())
         self.menubar.addAction(self.menu_E.menuAction())
@@ -2410,7 +2413,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "生产线流程挖掘系统"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "生产业务流程建模、挖掘与优化系统"))
         self.label_hp1.setText(_translate("MainWindow", "激光切割"))
         self.label.setText(_translate("MainWindow", "生产流程模型"))
         self.label_hp2.setText(_translate("MainWindow", "数控折弯"))
@@ -2475,6 +2478,7 @@ class Ui_MainWindow(object):
         self.action_5.setText(_translate("MainWindow", "停止"))
         self.action_6.setText(_translate("MainWindow", "绘图"))
         self.action_7.setText(_translate("MainWindow", "绘图"))
+        self.action_8.setText(_translate("MainWindow", "设置接收邮箱"))
 
 
 import resource_rc

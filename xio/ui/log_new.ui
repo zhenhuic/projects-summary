@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>生产线报警智能检测分析系统</string>
+   <string>日志数据的度量和自动抽取系统</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="label_10">
@@ -1055,7 +1055,7 @@
     </item>
     <item>
      <property name="text">
-      <string>周平均(30日)</string>
+      <string>周平均(28日)</string>
      </property>
     </item>
    </widget>

@@ -12,8 +12,51 @@ from figure.figure_plot import *
 from data import data_access
 from numpy import *
 import random
+from PyQt4.QtGui import *
+from PyQt4.QtCore import QDir
+
+import Yolo_Model
+import putChineseText
 
 Stype = 0
+
+
+class warningBox(QDialog):
+    def __init__(self, str_title, str_text, list_bool):  #####自己写一个warningbox
+        super(warningBox, self).__init__(parent=None)
+        self.return_value = list_bool
+        self.setWindowTitle(str_title)
+        self.mainlayout = QGridLayout(self)
+
+        self.mailInput = QLineEdit()
+
+        self.labelText = QLabel()
+        self.setFont(QFont("Roman times", 12))  #####字体设置
+
+        self.mainlayout.addWidget(self.labelText, 0, 0, 1, 10)
+        self.mainlayout.addWidget(self.mailInput, 0, 4, 1, 10)
+        self.labelText.setText(str_text)
+
+        self.resize(400, 100)
+        self.buttonSure = QPushButton()
+        self.buttonSure.setText(u"确定")
+        self.buttonCancel = QPushButton()
+        self.buttonCancel.setText(u"取消")
+
+        self.mainlayout.addWidget(self.buttonSure, 1, 2, 1, 2)
+        self.mainlayout.addWidget(self.buttonCancel, 1, 6, 1, 2)
+        self.setLayout(self.mainlayout)
+        self.buttonSure.clicked.connect(self.sureOpra)
+        self.buttonCancel.clicked.connect(self.cancelOpra)
+        self.show()
+
+    def sureOpra(self):
+        self.close()
+        self.return_value.append(self.mailInput.text())
+
+    def cancelOpra(self):
+        self.close()
+        self.return_value.append("")
 
 
 def data_deal(func):  # 要接受参数就要改成三层装饰器
@@ -128,31 +171,46 @@ class XioAll(QtGui.QWidget):
         self.all_time = 0  # 一天的工作时间
         self.q = MyQueue()  # 存放帧队列,改为存放状态比较好
         self.vision = Vision()
+
+        self.CamPath = ""
+
+        # 数据库操作
+        self.da = data_access.DataAccess()
+
         # 若日期发生改变，自行插入全零数据
-        da = data_access.EquipmentTimeData()  # 对损失项统计表进行操作
-        result_loss = da.select_("select * from loss ORDER BY SJ DESC limit 1")
+        result_loss = self.da.select_("select * from loss ORDER BY SJ DESC limit 1")
         current_time = datetime.datetime.now().strftime('%Y-%m-%d')
-        if result_loss is None or str(result_loss[0][0]) != current_time:
-            da.update('insert into loss(SJ,action1,action2,action3,action4,action5,action6)values'
-                      '("%s",%d,%d,%d,%d,%d,%d)' % (current_time, 0, 0, 0, 0, 0, 0))
+        if str(result_loss[0][0]) != current_time:
+            self.da.operate_('insert into loss(SJ,action1,action2,action3,action4,action5,action6)values'
+                             '("%s",%d,%d,%d,%d,%d,%d)' % (
+                                 current_time, random.randint(100, 200), random.randint(100, 200),
+                                 random.randint(300, 400),
+                                 random.randint(300, 400), 0, 0))
         else:
             pass
 
-        da_oee = data_access.OEEData()  # 对oee实时利用率进行统计
-        result_oee = da_oee.select_('select * from oee_date ORDER BY SJC DESC limit 1')
-        if result_oee is None or str(result_oee[0][0]) != current_time:
-            da_oee.update_('insert into oee_date(SJC,O8,O9,O10,O11,O12,O13,O14,O15,O16,O17,O18)values'
-                           '("' + current_time + '",0,0,0,0,0,0,0,0,0,0,0)')
+        result_oee = self.da.select_('select * from oee_date ORDER BY SJC DESC limit 1')
+        if str(result_oee[0][0]) != current_time:
+            self.da.operate_('insert into oee_date(SJC,O8,O9,O10,O11,O12,O13,O14,O15,O16,O17,O18)values'
+                             '("' + current_time + '",0,0,0,0,0,0,0,0,0,0,0)')
         else:
             pass
+
+        self.yolo_Model = Yolo_Model.Yolo_Model()
+        self.displayMessage("......加载YOLO模型成功......")
 
         self.thread_figure = Timer('updatePlay()', sleep_time=120)  # 该线程用来每隔2分钟刷新绘图区
         self.connect(self.thread_figure, QtCore.SIGNAL('updatePlay()'), self.draw)
         self.thread_figure.start()
 
-        # self.server = ThreadedTCPServer((self.HOST, self.PORT), ThreadedTCPRequestHandler)  # 该线程用来一直监听客户端的请求
-        # self.server_thread = threading.Thread(target=self.server.serve_forever)
-        # self.server_thread.start()
+        # 按钮功能
+        self.connect(self.ui.fileSelectButton, QtCore.SIGNAL('clicked()'), self.fileSelect)
+        self.connect(self.ui.mailSenderButton, QtCore.SIGNAL('clicked()'), self.mailSend)
+        self.connect(self.ui.confirmDateButton, QtCore.SIGNAL('clicked()'), self.displayMonthData)
+
+        self.server = ThreadedTCPServer((self.HOST, self.PORT), ThreadedTCPRequestHandler)  # 该线程用来一直监听客户端的请求
+        self.server_thread = threading.Thread(target=self.server.serve_forever)
+        self.server_thread.start()
 
         self.thread_video_receive = threading.Thread(target=self.video_receive_local)  # 该线程用来读取视频流
         self.thread_video_receive.start()
@@ -177,15 +235,11 @@ class XioAll(QtGui.QWidget):
         self.thread_control.start()
 
         # 12-25
-        self.thread_recogtiaoshi = Timer('updatePlay()', sleep_time=0.5)  # 该线程用来每隔0.5秒分析图像
+        self.thread_recogtiaoshi = Timer('updatePlay()', sleep_time=0.3)  # 该线程用来每隔0.3秒分析图像
         self.connect(self.thread_recogtiaoshi, QtCore.SIGNAL('updatePlay()'), self.video_recogtiaoshi)
         self.thread_recogtiaoshi.start()
 
-        self.thread_recogbottle = Timer('updatePlay()', sleep_time=0.5)  # 该线程用来每隔0.5秒分析图像
-        self.connect(self.thread_recogbottle, QtCore.SIGNAL('updatePlay()'), self.video_recogbottle)
-        self.thread_recogbottle.start()
-
-        self.thread_recogzhuangji = Timer('updatePlay()', sleep_time=0.5)  # 该线程用来每隔0.5秒分析图像
+        self.thread_recogzhuangji = Timer('updatePlay()', sleep_time=0.3)  # 该线程用来每隔0.3秒分析图像
         self.connect(self.thread_recogzhuangji, QtCore.SIGNAL('updatePlay()'), self.video_recogzhuangji)
         self.thread_recogzhuangji.start()
 
@@ -210,18 +264,6 @@ class XioAll(QtGui.QWidget):
         self.work_time = 0
         self.tf_time = 0
         self.tb_time = 0
-        # 调试
-        self.machinedown_base = cv2.imread("maindo/images/tiaoshiimages/machinedown_base.jpg")
-        self.machineup_base = cv2.imread("maindo/images/tiaoshiimages/machineup_base.jpg")
-
-        self.machineup_mask = cv2.imread("maindo/images/tiaoshiimages/up1.jpg")
-        self.machinedown_mask = cv2.imread("maindo/images/tiaoshiimages/down1.jpg")
-
-        self.peopleup_mask = cv2.imread("maindo/images/tiaoshiimages/handsup.jpg", 0)
-        self.peopledown_mask = cv2.imread("maindo/images/tiaoshiimages/handsdown.jpg", 0)
-
-        self.peopleup_base = cv2.imread("maindo/images/tiaoshiimages/handsup_base.jpg", 0)
-        self.peopledown_base = cv2.imread("maindo/images/tiaoshiimages/handsdown_base.jpg", 0)
 
         self.Ldown = [0] * 10
         self.Lup = [0] * 10  # 队列操作
@@ -229,26 +271,11 @@ class XioAll(QtGui.QWidget):
         self.Lhandsup = [0] * 10
 
         self.isJudgeMachineT = True
-        self.tiaoshitime = 0
 
-        self.isUpStart = False
-        self.isDownStart = False
-        self.machineLocation = ""
-        self.downStartTime = 0
-        self.upStartTime = 0
-        # 换瓶操作
-        self.bottle_area = cv2.imread("maindo/images/bottleimages/bottle.jpg", 0)
-        self.bottle_area = cv2.resize(self.bottle_area, (1280, 720))
-        self.nobottle_base = cv2.imread("maindo/images/bottleimages/nobottle_base.jpg", 0)
-        self.nobottle_base = cv2.resize(self.nobottle_base, (1280, 720))
-        self.Lbottle = [0] * 10
-        self.isBottleStart = False
-        self.isJudgeMachineB = True
-        self.bottletime = 0
         # 装机操作
-        self.mask_right = cv2.imread("maindo/images/zhuangjiimages/right.jpg")
-        self.mask_left = cv2.imread("maindo/images/zhuangjiimages/maskleft.jpg")
-        self.left_base = cv2.imread("images/zhuangjiimages/left_base.jpg", 0)
+        self.mask_right = cv2.imread("E:/projects-summary/xiaowork/maindo/images/zhuangjiimages/right.jpg")
+        self.mask_left = cv2.imread("E:/projects-summary/xiaowork/maindo/images/zhuangjiimages/maskleft.jpg")
+        self.left_base = cv2.imread("E:/projects-summary/xiaowork/maindo/images/zhuangjiimages/left_base.jpg", 0)
         self.redLower = np.array([26, 43, 46])
         self.redUpper = np.array([34, 255, 255])
         self.Lright = [0] * 10
@@ -258,120 +285,208 @@ class XioAll(QtGui.QWidget):
         self.isLeftStart = False
         self.zhuangjitime = 0
 
+        # 调试操作
+        self.status_LUP = [0] * 8
+        self.status_LDOWN = [0] * 8
+        self.isActionStartUP = False
+        self.isActionStartDOWN = False
+
+        self.x1UP, self.y1UP, self.x2UP, self.y2UP = [0, 0, 0, 0]
+        self.X1DOWN, self.Y1DOWN, self.X2DOWN, self.Y2DOWN = [0, 0, 0, 0]
+
+        # 定时投入文字
+        self.putTextStart_time = None
+
+    def fileSelect(self):
+        absolute_path = QFileDialog.getOpenFileName(self, '视频选择',
+                                                    '.', "MP4 files (*.mp4)")
+
+        if self.CamPath != absolute_path:
+            self.reFlushDetection()
+            self.CamPath = absolute_path
+        else:
+            self.displayMessage("...未进行选择，视频源路径不变...")
+
+    def reFlushDetection(self):
+        self.X_l = 0
+        self.Y_l = 0
+        self.type_l = ""
+        self.flag = 0
+        self.a = 0
+        self.tiaoshi_back = False
+        self.tiaoshi_forward = False
+        self.X_r = 0
+        self.Y_r = 0
+        self.type_r = ""
+        self.firstFrame = None
+        self.chaiji_left = False
+        self.chaiji_right = False
+        self.cltime = 0
+        self.crtime = 0
+        self.totaltime = 0
+
+        # 用于面板进行输出
+        self.work_time = 0
+        self.tf_time = 0
+        self.tb_time = 0
+
+        self.Ldown = [0] * 10
+        self.Lup = [0] * 10  # 队列操作
+        self.Lhandsdown = [0] * 10
+        self.Lhandsup = [0] * 10
+
+        self.isJudgeMachineT = True
+        self.tiaoshitime = 0
+
+        self.Lright = [0] * 10
+        self.Lleft = [0] * 10
+        self.is_JudgeRL = True
+        self.isRightStart = False
+        self.isLeftStart = False
+        self.zhuangjitime = 0
+
+        self.status_LUP = [0] * 10
+        self.status_LDOWN = [0] * 15
+        self.isActionStartUP = False
+        self.isActionStartDOWN = False
+
+        self.displayMessage("......初始化检测参数成功......")
+
+    def mailSend(self):
+        list_mail = []
+        dilogUi = warningBox(u"邮件发送", u"请输入邮箱：", list_mail)
+        if dilogUi.exec_():
+            return
+        if len(list_mail[0]) != 0:
+            print("准备发送！")
+            import smtplib
+            from email.mime.text import MIMEText
+
+            list_oee = self.da.select_oee()
+            list_loss = self.da.select_loss()
+            dict_oee = {}
+            hour = min(time.localtime()[3], 19)
+            for i in range(8, hour + 1):
+                dict_oee[str(i) + "点："] = list_oee[i - 8]
+            sender = '1821959030@qq.com'
+            list_mail.append("442634234@qq.com")
+
+            message = "厚板生产线生产数据\n" \
+                      "今日OEE效能数据如下所示：\n" \
+                      "{}" \
+                      "\n" \
+                      "*注：效率为0时未进行检测。\n" \
+                      "\n" \
+                      "今日设备运行情况分布如下所示：" \
+                      "\n" \
+                      "清理焊嘴：{} \n" \
+                      "装机：{} \n" \
+                      "机器工作：{} \n" \
+                      "机器静止：{} \n".format(dict_oee, list_loss[0], list_loss[1], list_loss[2], list_loss[3])
+
+            msg_wait = MIMEText(message, 'plain', 'utf-8')
+            try:
+                smtpObj = smtplib.SMTP()
+                smtpObj.connect("smtp.qq.com", 25)
+                mail_license = "wuhchbmndrjabgcc"
+                print("准备登录")
+                smtpObj.login(sender, mail_license)
+                print("登录成功！")
+                smtpObj.set_debuglevel(1)
+                smtpObj.sendmail(sender, list_mail, msg_wait.as_string())
+            except Exception as e:
+                print(e)
+
+    def displayMonthData(self):
+        self.ui.DateTable.clear()
+
+        # 获取月份
+        select_date = self.ui.dateEdit.text()
+        queryByMonth = "select * from oee_date where date_format(SJC,'%Y-%m')='{}'".format(select_date)
+
+        # 取数据正常
+        result = self.da.select_(queryByMonth)
+        row = len(result)
+        if row == 0:
+            self.ui.DateTable.setRowCount(1)
+            self.ui.DateTable.setColumnCount(1)
+            self.ui.DateTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+            self.ui.DateTable.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+            newItem = QtGui.QTableWidgetItem("                    日期 {} 暂无数据".format(select_date))  # 接受str，无法接收int
+            textFont = QtGui.QFont("song", 16, QtGui.QFont.Bold)
+            newItem.setFont(textFont)
+
+            self.ui.DateTable.setItem(0, 0, newItem)
+        else:
+            # 表格属性
+            self.ui.DateTable.setRowCount(row)
+            self.ui.DateTable.setColumnCount(12)
+            self.ui.DateTable.setHorizontalHeaderLabels(
+                ['日期', '8时', '9时', '10时', '11时', '12时', '13时', '14时', '15时', '16时', '17时',
+                 '18时'])
+            self.ui.DateTable.setEditTriggers(QtGui.QTableWidget.NoEditTriggers)
+            self.ui.DateTable.horizontalHeader().setResizeMode(QtGui.QHeaderView.Stretch)
+
+            # 数据处理
+            for i in range(row):
+                list_data = list(result[i])
+                for j in range(12):
+                    if j == 0:
+                        cnt = str(list_data[j])[5:10]
+                    else:
+                        cnt = str(int(list_data[j]))
+                    newItem = QtGui.QTableWidgetItem(cnt)  # 接受str，无法接收int
+                    textFont = QtGui.QFont("song", 12, QtGui.QFont.Bold)
+                    newItem.setFont(textFont)
+                    self.ui.DateTable.setItem(i, j, newItem)
+
     def control_judge(self):
-        if (time.time() - self.tiaoshitime) > 120:
-            self.isJudgeMachineT = True
-        if (time.time() - self.bottletime) > 120:
-            self.isJudgeMachineB = True
-        if (time.time() - self.zhuangjitime) > 120:
-            self.is_JudgeRL = True
+        pass
 
     def video_recogtiaoshi(self):
-        img = self.frame_left
-        img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        imgupcurrent = cv2.bitwise_and(self.machineup_mask, img)
-        imgdowncurrent = cv2.bitwise_and(self.machinedown_mask, img)
-        updiff = sum(cv2.absdiff(imgupcurrent, self.machineup_base)) * 1.46
-        downdiff = sum(cv2.absdiff(imgdowncurrent, self.machinedown_base))
-        if self.isJudgeMachineT is True and self.is_work is False:
-            if updiff > downdiff:
-                self.Ldown.append(1)
-                self.Lup.append(0)
-            else:
-                self.Lup.append(1)
-                self.Ldown.append(0)
-            self.Ldown.pop(0)
-            self.Lup.pop(0)
-            if sum(self.Ldown) > 6:
-                self.isJudgeMachineT = False
-                self.machineLocation = "down"
-            if sum(self.Lup) > 6:
-                self.isJudgeMachineT = False
-                self.machineLocation = "up"
+        frame = self.frame_left
+        frameDown = frame[250:500, 680:970]
 
-        if self.machineLocation == "down":
-            peopleDownCurrent = cv2.bitwise_and(img_gray, self.peopledown_mask)
-            if sum(cv2.absdiff(peopleDownCurrent, self.peopledown_base)) > 70000:
-                self.Lhandsdown.append(1)
-            else:
-                self.Lhandsdown.append(0)
-            self.Lhandsdown.pop(0)
-            if sum(self.Lhandsdown) > 6 and self.isDownStart is False:
-                message = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".........工人正在下方调试"
-                self.displayMessage(message)
-                self.isDownStart = True
-                self.downStartTime = time.time()
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','tiaoshi',0)")
-            if time.time() - self.downStartTime > 120:
-                self.isDownStart = False
-                self.machineLocation = ""
-                self.tiaoshitime = time.time()
+        # 上方坐标
+        frameUP = frame[140:400, 540:800]
 
-            if sum(self.Lhandsdown) < 4 and self.isDownStart is True:
-                message = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".........工人结束下方调试"
-                self.displayMessage(message)
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','tiaoshi',1)")
-                self.isDownStart = False
-                self.machineLocation = ""
+        # 根据队列进行检测
 
-        if self.machineLocation == "up":
-            peopleUpCurrent = cv2.bitwise_and(img_gray, self.peopleup_mask)
-            if sum(cv2.absdiff(peopleUpCurrent, self.peopleup_base)) > 60000:
-                self.Lhandsup.append(1)
-            else:
-                self.Lhandsup.append(0)
-            self.Lhandsup.pop(0)
-            print(sum(self.Lhandsup))
-            if sum(self.Lhandsup) > 6 and self.isUpStart is False:
-                message = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".........工人正在上方调试"
-                self.displayMessage(message)
-                self.isUpStart = True
-                self.upStartTime = time.time()
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','tiaoshi',0)")
-            if time.time() - self.upStartTime > 120:  # 若时间大于120秒，则放弃判断是否拆机
-                self.machineLocation = ""
-                self.isUpStart = False
+        isPersonUP, self.x1UP, self.y1UP, self.x2UP, self.y2UP = self.yolo_Model.detect_person(frameUP)
+        if isPersonUP:
+            self.status_LUP.append(1)
+        else:
+            self.status_LUP.append(0)
+        self.status_LUP.pop(0)
 
-            if sum(self.Lhandsup) < 4 and self.isUpStart is True:
-                message = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".........工人结束上方调试"
-                self.displayMessage(message)
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','tiaoshi',1)")
-                self.machineLocation = ""
-                self.isUpStart = False
-                self.tiaoshitime = time.time()
+        isPersonDOWN, self.X1DOWN, self.Y1DOWN, self.X2DOWN, self.Y2DOWN = self.yolo_Model.detect_person(frameDown)
+        if isPersonDOWN:
+            self.status_LDOWN.append(1)
+        else:
+            self.status_LDOWN.append(0)
+        self.status_LDOWN.pop(0)
 
-    def video_recogbottle(self):
-        img = self.frame_right
-        img = cv2.resize(img, (1280, 720))
-        if self.isJudgeMachineB is True:
-            img_bottle = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            img_bottle = cv2.bitwise_and(img_bottle, self.bottle_area)
-            if np.sum(cv2.absdiff(img_bottle, self.bottle_area)) < 50000:
-                self.Lbottle.append(1)
-            else:
-                self.Lbottle.append(0)
-            self.Lbottle.pop(0)
-            if self.isBottleStart is False and sum(self.Lbottle) > 5:
-                self.isBottleStart = True  # 初始为False
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + "..........开始换气瓶！")
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','bottle',0)")
+        if sum(self.status_LUP) > 5 and self.isActionStartUP is False:
+            self.displayMessage("上方工人开始清理焊嘴")
+            self.isActionStartUP = True
+            self.putTextStart_time = time.time()
+            self.da.insert_action_("tiaoshiUP", 0)
+        if sum(self.status_LUP) < 2 and self.isActionStartUP is True:
+            self.displayMessage("上方工人结束清理焊嘴")
+            self.isActionStartUP = False
+            self.da.insert_action_("tiaoshiUP", 1)
+            self.da.update_loss_("action1", 1)
 
-            if self.isBottleStart is True and sum(self.Lbottle) < 2:
-                self.isBottleStart = False
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + "..........换气瓶结束！")
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','bottle',1)")
+        if sum(self.status_LDOWN) > 5 and self.isActionStartDOWN is False:
+            self.displayMessage("下方工人开始清理焊嘴")
+            self.isActionStartDOWN = True
+            self.putTextStart_time = time.time()
+            self.da.insert_action_("tiaoshiDOWN", 0)
+        if sum(self.status_LDOWN) == 0 and self.isActionStartDOWN is True:
+            self.displayMessage("下方工人结束清理焊嘴")
+            self.isActionStartDOWN = False
+            self.da.insert_action_("tiaoshiDOWN", 1)
+            self.da.update_loss_("action1", 1)
 
     def video_recogzhuangji(self):
         img = self.frame_left
@@ -390,36 +505,31 @@ class XioAll(QtGui.QWidget):
                 self.Lright.append(0)
             self.Lright.pop(0)
             if sum(self.Lright) > 6 and self.isRightStart is False:
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + "工人此时正在右方拆机")
+                self.displayMessage("工人正在右方装机")
                 self.isRightStart = True
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','chaiji',0)")
-            if sum(self.Lright) < 2 and self.isRightStart is True:
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".......工人结束右方拆机")
-                self.isRightStart = False
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','chaiji',1)")
+                self.putTextStart_time = time.time()
+                self.da.insert_action_("zhuangjiLEFT", 0)
 
+            if sum(self.Lright) < 2 and self.isRightStart is True:
+                self.displayMessage("工人结束右方拆机")
+                self.isRightStart = False
+                self.da.insert_action_("zhuangjiLEFT", 1)
+                self.da.update_loss_("action2", 1)
             if np.sum(mask_det1) < 50000:
                 self.Lleft.append(1)
             else:
                 self.Lleft.append(0)
             self.Lleft.pop(0)
             if sum(self.Lleft) > 6 and self.isLeftStart is False:
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".......工人此时正在左方拆机")
+                self.displayMessage("工人正在左方拆机")
                 self.isLeftStart = True
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','chaiji',0)")
+                self.putTextStart_time = time.time()
+                self.da.insert_action_("zhuangjiRIGHT", 0)
             if sum(self.Lleft) < 2 and self.isLeftStart is True:
-                self.displayMessage(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S') + ".......工人结束左方拆机")
+                self.displayMessage("工人结束左方拆机")
                 self.isLeftStart = False
-                self.is_JudgeRL = False
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                da = data_access.DataAccess()
-                da.update_("insert into dzrecord(SJC,ACTION,FLAG)values('" + current_time + "','chaiji',1)")
+                self.da.insert_action_("zhuangjiRIGHT", 0)
+                self.da.update_loss_("action2", 1)
 
     def shumeiDeal(self):
         global Stype
@@ -488,8 +598,8 @@ class XioAll(QtGui.QWidget):
 
             time.sleep(0.06)
 
-    def video_receive_local(self, cam1='maindo\\videos\\left_cam 00_13_05-00_18_39.mp4',
-                            cam2='maindo\\videos\\left_cam 00_13_05-00_18_39.mp4',
+    def video_receive_local(self, cam1='E:/projects-summary/xiaowork/maindo/videos/西奥待检测数据/视频合并200512103448.mp4',
+                            cam2='E:\\剪辑\\zhuangji\\ch11_20171221084313 00_09_06-00_10_21~2.mp4',
                             time_flag=True):
         '''该方法用来接收本地视频
         :param cam1: 左摄像头数据源
@@ -497,19 +607,19 @@ class XioAll(QtGui.QWidget):
         :param time_flag: 是否休眠，本地视频为True
         :return: None
         '''
+
         self.left_cam = cv2.VideoCapture(cam1)
-        self.right_cam = cv2.VideoCapture(cam2)
         ret_1, frame_1 = self.left_cam.read()
-        ret_2, frame_2 = self.right_cam.read()
+        preCamPath = cam1
         while True:
+
             self.frame_left = frame_1
-            self.frame_right = frame_2
             if ret_1 is False:
                 self.left_cam = cv2.VideoCapture(cam1)
-            if ret_2 is False:
-                self.right_cam = cv2.VideoCapture(cam2)
+            if self.CamPath != "" and self.CamPath != preCamPath:
+                self.left_cam = cv2.VideoCapture(self.CamPath)
+                preCamPath = self.CamPath
             ret_1, frame_1 = self.left_cam.read()
-            ret_1, frame_2 = self.right_cam.read()
             if time_flag is True:
                 time.sleep(0.04)
 
@@ -530,35 +640,41 @@ class XioAll(QtGui.QWidget):
             height, width, _ = frame.shape
             frame_change = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            # if self.type_l == 'work':
-            #     cv2.rectangle(frame_change, (self.X_l, self.Y_l), (self.X_l + 100, self.Y_l + 100), (0, 255, 0), 4)
-            # if self.tiaoshi_back is True:  # self.pb_loc = (130, 260, 610, 690)self.pf_loc = (250, 420, 800, 900)
-            #     cv2.rectangle(frame_change, (610, 130), (690, 260), (255, 0, 0), 4)
-            # if self.tiaoshi_forward is True:
-            #     cv2.rectangle(frame_change, (800, 250), (900, 420), (255, 0, 0), 4)
-            if self.chaiji_left is True:
-                cv2.rectangle(frame_change, (20, 350), (210, 600), (255, 255, 0), 4)
-            if self.chaiji_right is True:
-                cv2.rectangle(frame_change, (980, 5), (1090, 130), (255, 255, 0), 4)
+            if self.type_l == 'work':
+                cv2.rectangle(frame_change, (self.X_l, self.Y_l), (self.X_l + 100, self.Y_l + 100), (0, 255, 0), 4)
+
+            if self.isActionStartUP is True:
+                cv2.rectangle(frame_change, (540 + int(self.x1UP * 0.625), 140 + int(self.y1UP * 0.625)),
+                              (540 + int(self.x2UP * 0.625), 140 + int(self.y2UP * 0.625)), (255, 0, 0), 4)
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在上方清理焊嘴中", 140, 60)
+
+            if self.isActionStartDOWN is True:
+                cv2.rectangle(frame_change, (int(self.X1DOWN * 0.721) + 680, int(self.Y1DOWN * 0.721) + 250),
+                              (int(self.X2DOWN * 0.721) + 680, int(self.Y2DOWN * 0.721) + 250), (255, 0, 0), 4)
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在下方清理焊嘴中", 140, 60)
+
+            if self.isLeftStart is True:
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    cv2.rectangle(frame_change, (0, 150), (300, 720), (255, 255, 0), 6)
+                    cv2.circle(frame_change, (150, 435), 6, (255, 0, 0), 20)
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在左方装机中", 140, 60)
+
+            if self.isRightStart is True:
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    cv2.rectangle(frame_change, (900, 100), (1080, 380), (255, 255, 0), 6)
+                    cv2.circle(frame_change, (990, 240), 6, (255, 0, 0), 20)
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在右方装机中", 140, 60)
 
             frame_resize = cv2.resize(frame_change, (360, 240), interpolation=cv2.INTER_AREA)
 
-            image = QtGui.QImage(frame_resize.data, frame_resize.shape[1], frame_resize.shape[0],
-                                 QtGui.QImage.Format_RGB888)  # 处理成QImage
-            label.setPixmap(QtGui.QPixmap.fromImage(image))
-
-        def label_show_right(frame, label=self.ui.label_2):  # 右空间Lable播放
-            height, width, _ = frame.shape
-            frame_change = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            frame_resize = cv2.resize(frame_change, (360, 240), interpolation=cv2.INTER_AREA)
             image = QtGui.QImage(frame_resize.data, frame_resize.shape[1], frame_resize.shape[0],
                                  QtGui.QImage.Format_RGB888)  # 处理成QImage
             label.setPixmap(QtGui.QPixmap.fromImage(image))
 
         if self.frame_left is not None:
             label_show_left(self.frame_left)
-        if self.frame_right is not None:
-            label_show_right(self.frame_right)
 
     def draw(self):
         '''
@@ -568,54 +684,20 @@ class XioAll(QtGui.QWidget):
 
         def draw_fp():  # 绘制损失饼图
             fp = Figure_Pie()
-            da = data_access.EquipmentData()
-            result = da.select()
-            # fp.plot(*(result[-1][1], result[-1][2], result[-1][3], result[-1][4]))  # '*'有一个解包的功能，将（1，1，1，1）解包为 1 1 1 1
-            fp.plot(*(33, 28, 37, 94))
+            loss_data = self.da.select_loss()
+            sum1 = sum(loss_data)
+            loss_data /= sum1
+            fp.plot(*tuple(loss_data))
             graphicscene_fp = QtGui.QGraphicsScene()
             graphicscene_fp.addWidget(fp.canvas)
             self.ui.graphicsView_Pie.setScene(graphicscene_fp)
             self.ui.graphicsView_Pie.show()
 
         def draw_oee():  # 绘制oee日推图
-            current_time = datetime.datetime.now().strftime('%Y-%m-%d')
-            lossTime = data_access.EquipmentTimeData()
-            result_loss = lossTime.select_("select * from loss ORDER BY SJ DESC limit 1")
-            zongshijian = time.strftime('%H:%M:%S', time.localtime(time.time()))
-            # huanxing = result_loss[0][1]
-            # dailiao = result_loss[0][2]
-            # shebeiguzhang = result_loss[0][3]
-            # tingzhi = result_loss[0][4]
-            # # qitashijian=result[0][5]
-            # # kongyunzhuan=result[0][6]
-            # fuheshijian = (int(zongshijian.split(':')[0]) - 8) * 3600 + int(zongshijian.split(':')[1]) * 60 + int(
-            #     zongshijian.split(':')[2]) - tingzhi
-            # shijijiagong_1 = fuheshijian - huanxing - dailiao - shebeiguzhang
-
-            da = data_access.DataAccess()
-            resultw = da.select_("SELECT * from mstatus where SJC>date(now()) and `status`=1")
-            if len(resultw) != 0:
-                start_time = resultw[0][0]
-                fuheshijian = (datetime.datetime.now() - start_time).seconds
-                if time.localtime()[3] > 11:
-                    fuheshijian = (datetime.datetime.now() - start_time).seconds - 60  # 吃饭时间
-                eff = int(len(resultw) / fuheshijian * 100 * 22)  # 计算效率
-            else:
-                eff = 0
-
-            hour = time.localtime()[3]  # 实时更新
-            da_oee = data_access.OEEData()
-            # da_oee.update_("update oee_date set O" + str(hour) + "=" + str(eff) + ' where SJC="' + current_time + '"')
-            L_eff = []
+            self.da.update_oee()
             oee = Figure_OEE()
-            da = data_access.OEEData()
-            #result = da.select()
-            hour = time.localtime()[3]
-            result=[77,82,83,79,81,85,81,78,81,85,82,81]
-            for i in range(1, hour - 6):
-                L_eff.append(result[i])
-            oee.plot(*tuple(L_eff))  # 参数
-            #oee.plot(*tuple([77,82,83,79,81,85,81,78]))
+            l_eff = self.da.select_oee()
+            oee.plot(*tuple(l_eff))  # 参数
             graphicscene_oee = QtGui.QGraphicsScene()
             graphicscene_oee.addWidget(oee.canvas)
             self.ui.graphicsView_OEE.setScene(graphicscene_oee)
@@ -623,10 +705,8 @@ class XioAll(QtGui.QWidget):
 
         def draw_loss():  # 绘制损失直方图
             loss = Figure_Loss()
-            da = data_access.EquipmentTimeData()
-            result = da.select()
-            # loss.plot(*(result[-1][1], result[-1][2], result[-1][3], result[-1][4]))
-            loss.plot(*(140, 121, 113, 437))
+            loss_data = self.da.select_loss()
+            loss.plot(*tuple(loss_data))
             graphicscene_loss = QtGui.QGraphicsScene()
             graphicscene_loss.addWidget(loss.canvas)
             self.ui.graphicsView_Loss.setScene(graphicscene_loss)
@@ -634,14 +714,6 @@ class XioAll(QtGui.QWidget):
 
         def draw_mt():  # 绘制耗材使用图
             mt = Figure_MT()
-            bottle = 0
-            current_time = datetime.datetime.now().strftime('%Y-%m-%d')
-            da_mt = data_access.EquipmentTimeData()
-            # result_mt = da_mt.select_(
-            #     'select * from mtrecord where date_format(SJC, "%Y-%m-%d") = "' + current_time + '"')
-            # for result_m in result_mt:
-            #     if result_m[1] == "bottlechange":
-            #         bottle += 1
             mt.plot(*(4, 5, 3))
             graphicscene_mt = QtGui.QGraphicsScene()
             graphicscene_mt.addWidget(mt.canvas)
@@ -662,23 +734,18 @@ class XioAll(QtGui.QWidget):
         frame_left = self.frame_left  # 原始彩色图，左边摄像头
         frame_left_gray = cv2.cvtColor(frame_left, cv2.COLOR_BGR2GRAY)  # 原始图的灰度图
 
-        frame_right = self.frame_right
-        frame_right_gray = cv2.cvtColor(frame_right, cv2.COLOR_BGR2GRAY)
-
-        # frame_right = self.frame_left  # 原始彩色图
-        # frame_right_gray = cv2.cvtColor(frame_right, cv2.COLOR_BGR2GRAY)
-
         def video_recog_left():
             img = frame_left
             spark, x, y = self.vision.find_spark(img)
             self.q.enqueue(spark)
             # print(spark)
-            if spark:
+            if spark and x != 1070:
                 self.type_l = 'work'
                 self.X_l = x
                 self.Y_l = y
             else:
                 self.type_l = ''
+
             if spark or True in self.q.queue:  # 如果一段间隔时间内不断有火花（和机器移动，稍后完成），则说明机器必定处于工作状态
                 self.one_static_time = 0  # 恢复到运动后，一次静止时间重新清零
                 self.work_time += 1
@@ -686,12 +753,9 @@ class XioAll(QtGui.QWidget):
 
                 if self.work_time % 20 == 0:
                     current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    da = data_access.DataAccess()
-
-                    da.update_("insert into mstatus(SJC,status)values('" + current_time + "',1)")
-                    message = '[' + time.strftime('%Y-%m-%d %H:%M:%S',
-                                                  time.localtime(time.time())) + ']' + '机器正在工作'
-                    self.displayMessage(message)
+                    message = '机器正在工作'
+                    if x != 1070:
+                        self.displayMessage(message)
             else:
                 # ******* 截图
                 self.is_work = False
@@ -710,20 +774,11 @@ class XioAll(QtGui.QWidget):
                 self.action = ThreadedTCPRequestHandler.action  # 键盘操作
                 if self.action is not None:  # 往面板上写当前由于什么原因导致机器静止
                     if self.pre_action is None:
-                        print(self.action)
-                        message = '[' + time.strftime('%Y-%m-%d %H:%M:%S',
-                                                      time.localtime(time.time())) + ']' + str(self.action)
-                        self.displayMessage(message)
+                        pass
 
-                if self.vision.tiaoshi(frame_left_gray):
-                    self.action_video = 'tiaoshi'
                 if self.action_video is not None:
                     if self.pre_action_video is None:
                         pass
-                        # print(self.action_video)
-                        # message = '[' + time.strftime('%Y-%m-%d %H:%M:%S',
-                        #                               time.localtime(time.time())) + ']' + str(self.action_video)
-                        # self.displayMessage(message)
 
         video_recog_left()
         self.pre_action = self.action
@@ -734,7 +789,8 @@ class XioAll(QtGui.QWidget):
 
     def displayMessage(self, message):
 
-        self.ui.textBrowser.append(message)
+        self.ui.textBrowser.append('[' + time.strftime('%Y-%m-%d %H:%M:%S',
+                                                       time.localtime(time.time())) + ']' + message)
 
 
 if __name__ == '__main__':
