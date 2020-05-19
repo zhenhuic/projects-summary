@@ -30,7 +30,7 @@ class Figure_171(Figure_Origin):
             rect = ax.patch
             rect.set_facecolor('lightblue')
 
-            x_label = ('机器工作', '工人材料切换', '工人拖料')
+            x_label = ('机器工作', '材料切换', '工人拖料')
             x_pos = np.arange(len(x_label))
             performance = list(args)
             ax.bar(x_pos, performance, width=0.30, align='center', alpha=0.4, color=['red', 'green', 'blue', 'gray'])
@@ -112,7 +112,7 @@ class Figure_Loss(Figure_Origin):
             rect = ax.patch
             rect.set_facecolor('lightblue')
 
-            x_label = ('调整机器', '材料切换', '静止', 'M5000工作')
+            x_label = ('修理机器', '材料切换', '静止', '工人拖料')
             x_pos = np.arange(len(x_label))
             performance = list(args)
             ax.bar(x_pos, performance, width=0.30, align='center', alpha=0.4, color=['red', 'green', 'blue', 'gray'])
@@ -125,7 +125,7 @@ class Figure_Loss(Figure_Origin):
             ax.set_yticks([0, 400, 800, 1200, 1600])
             ax.set_ylabel('时间：分钟', fontsize=10)
             ax.set_title("设备工作损失时间统计", fontsize=20)  # 30
-            ax.set_xticklabels((u'调整机器', u'材料切换', u'静止', u'工作'), fontsize=15)
+            ax.set_xticklabels((u'修理机器', u'材料切换', u'静止', u'工人拖料'), fontsize=15)
             ax.yaxis.grid(True)
             self.canvas.draw()
             plt.close()
@@ -144,7 +144,7 @@ class Figure_Pie(Figure_Origin):
         def plot_pie():
             ax = self.figure.add_subplot(111)
             ax.set_title("设备工作损失时间占比", fontsize=20)
-            labels = '调整机器', '材料切换', '静止', '工作'
+            labels = '修理机器', '材料切换', '静止', '工人拖料'
             sizes = args
             explode = (0, 0.1, 0, 0)  # 第一个异常在饼图冲凸显，凸显度为0.1
             ax.pie(sizes, explode=explode, labels=labels, autopct='%1.1f%%', shadow=True,

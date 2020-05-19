@@ -12,6 +12,7 @@ from config import *
 from visualize import *
 from util import *
 from sql.database import *
+from send_email import *
 
 # 将opencv格式的图片格式转换为可以输出到界面的格式
 def array_to_QImage(img, size):
@@ -49,9 +50,7 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
     mask_stage1 = cv.imread('mask/mask_flage1.jpg')
     mask_stage2 = cv.imread('mask/mask_flage2.jpg')
     mask_stage3 = cv.imread('mask/mask_flag3.jpg')
-    sql1 = "insert into pack(date,component1,component2,component3,success) values(Now(),"
 
-    video_path = "./2019-10-31-1.mp4"
     url = 'rtsp://admin:hdu417417@172.17.2.192:554/Streaming/Channels/201'
     capture = cv.VideoCapture(video_path)
 
@@ -93,6 +92,10 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
         if flag_stage2 != 1:
             if youyanji_detect(frame_720, mask_stage1) > threshold_youyanji and flag_stage1 == 0 and flag_stage1_1 == 0:
                 flag_stage1 = 1
+                timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())
+                qthread.text_append.emit(timestr + '操作行为识别：' + '开始装箱')
+                dbManager.zhuagnxiang_sql_and_insert(put_number, 1, 0)
+
 
             if flag_stage1 == 1 and youyanji_detect(frame_720, mask_stage1) < threshold_youyanji_down:
                 flag_stage1_1 = 1
@@ -166,8 +169,10 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
 
         if flag_stage3 == 1:
             timestr_image = time.strftime('%Y-%m-%d %H-%M-%S ', time.localtime())  # 冒号不可以出现在文件夹命名里面
+            dbManager.zhuagnxiang_sql_and_insert(put_number, 0, 1)
             if flag_lvtong == 1 and flag_xiangzi == 1:
                 timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())
+                qthread.text_append.emit(timestr + '操作行为识别：' + '结束装箱')
                 qthread.text_append.emit(timestr + '第' + str(put_number) + '次装箱 零件投放成功')  # 第200次装箱 零件投放成功
                 print("投放成功")
             if flag_lvtong == 0 and flag_xiangzi == 1:

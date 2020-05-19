@@ -21,7 +21,8 @@ class FigureLineChart:
                  datetime.datetime.now().strftime("%Y-%m-%d")]
             y = []
             end_time = datetime.datetime.now().strftime("%Y-%m-%d")
-            start_time = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.timedelta(days=6)).strftime("%Y-%m-%d")
+            start_time = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.timedelta(days=6)).strftime(
+                "%Y-%m-%d")
             connection = pymysql.connect(host='localhost',
                                          user='root',
                                          password='123456',
@@ -31,15 +32,17 @@ class FigureLineChart:
             cursor = connection.cursor()
             if scx == "houban":
                 sql = "select * from" + "`" + "s7300warning" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s AND BJ = '报警'"
-                cursor.execute(sql, (bq, start_time, (datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime("%Y-%m-%d")))
+                cursor.execute(sql, (bq, start_time, (
+                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime(
+                    "%Y-%m-%d")))
                 day1 = cursor.fetchall()
                 y.clear()
                 y.append(len(day1))
                 cursor.execute(sql, (bq, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
-                        days=1)).strftime("%Y-%m-%d"), (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
-                        days=2)).strftime("%Y-%m-%d")))
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
+                    days=1)).strftime("%Y-%m-%d"), (
+                                             datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
+                                         days=2)).strftime("%Y-%m-%d")))
                 day2 = cursor.fetchall()
                 y.append(len(day2))
                 cursor.execute(sql, (bq, (
@@ -92,7 +95,7 @@ class FigureLineChart:
             if scx == "hanjie":
                 sql = "select * from" + "`" + "dcbhj" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s AND ZT = '0-1'"
                 cursor.execute(sql, (bq, start_time, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime(
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime(
                     "%Y-%m-%d")))
                 day1 = cursor.fetchall()
                 y.clear()
@@ -154,7 +157,7 @@ class FigureLineChart:
             if scx == "xinsawanini":
                 sql = "select * from" + "`" + "xinsawanini" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s"
                 cursor.execute(sql, (bq, start_time, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime(
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=1)).strftime(
                     "%Y-%m-%d")))
                 day1 = cursor.fetchall()
                 y.clear()
@@ -215,11 +218,11 @@ class FigureLineChart:
                 plt.clf()
         elif days == "周平均(28日)":
             x = [(datetime.datetime.now() - datetime.timedelta(days=27)).strftime("%Y-%m-%d") + "-" + (
-                        datetime.datetime.now() - datetime.timedelta(days=20)).strftime("%Y-%m-%d"),
+                    datetime.datetime.now() - datetime.timedelta(days=20)).strftime("%Y-%m-%d"),
                  (datetime.datetime.now() - datetime.timedelta(days=20)).strftime("%Y-%m-%d") + "-" + (
-                             datetime.datetime.now() - datetime.timedelta(days=13)).strftime("%Y-%m-%d"),
+                         datetime.datetime.now() - datetime.timedelta(days=13)).strftime("%Y-%m-%d"),
                  (datetime.datetime.now() - datetime.timedelta(days=13)).strftime("%Y-%m-%d") + "-" + (
-                             datetime.datetime.now() - datetime.timedelta(days=6)).strftime("%Y-%m-%d"),
+                         datetime.datetime.now() - datetime.timedelta(days=6)).strftime("%Y-%m-%d"),
                  (datetime.datetime.now() - datetime.timedelta(days=6)).strftime(
                      "%Y-%m-%d") + "-" + datetime.datetime.now().strftime("%Y-%m-%d")]
             y = []
@@ -235,15 +238,17 @@ class FigureLineChart:
             cursor = connection.cursor()
             if scx == "houban":
                 sql = "select * from" + "`" + "s7300warning" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s AND BJ = '报警'"
-                cursor.execute(sql, (bq, start_time, (datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime("%Y-%m-%d")))
+                cursor.execute(sql, (bq, start_time, (
+                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime(
+                    "%Y-%m-%d")))
                 week1 = cursor.fetchall()
                 y.clear()
                 y.append(len(week1))
                 cursor.execute(sql, (bq, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
-                        days=6)).strftime("%Y-%m-%d"), (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
-                        days=13)).strftime("%Y-%m-%d")))
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
+                    days=6)).strftime("%Y-%m-%d"), (
+                                             datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(
+                                         days=13)).strftime("%Y-%m-%d")))
                 week2 = cursor.fetchall()
                 y.append(len(week2))
                 cursor.execute(sql, (bq, (
@@ -272,7 +277,7 @@ class FigureLineChart:
             if scx == "hanjie":
                 sql = "select * from" + "`" + "dcbhj" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s AND ZT = '0-1'"
                 cursor.execute(sql, (bq, start_time, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime(
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime(
                     "%Y-%m-%d")))
                 week1 = cursor.fetchall()
                 y.clear()
@@ -310,7 +315,7 @@ class FigureLineChart:
             if scx == "xinsawanini":
                 sql = "select * from" + "`" + "xinsawanini" + "`" + "WHERE BQ = %s AND SJ > %s AND SJ < %s"
                 cursor.execute(sql, (bq, start_time, (
-                            datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime(
+                        datetime.datetime.strptime(start_time, "%Y-%m-%d") + datetime.timedelta(days=6)).strftime(
                     "%Y-%m-%d")))
                 week1 = cursor.fetchall()
                 y.clear()

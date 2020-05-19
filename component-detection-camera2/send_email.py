@@ -15,8 +15,8 @@ class Email:
 
     @staticmethod
     def send_email(subject, content, imgpath=None, imgname=None, SMTP_host="smtp.qq.com",
-                   from_account="1192317022@qq.com", from_password="fsaxnxeuabakfgbc",
-                   to_account="xxx@xiolift.com"):
+                   from_account="497925460@qq.com", from_password="naykpnzytqthbhec",
+                   to_account="pj497925460@gmail.com"):
         """
         发送邮件
         :param subject: 邮件主题

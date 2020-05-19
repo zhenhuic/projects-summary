@@ -6,7 +6,7 @@ from numpy import *
 import threading
 import datetime
 from utils.utils import Timer, MyQueue
-from utils.vision import featrue_detection, diff, background_diff
+from utils.vision import featrue_detection, diff, background_diff, lines_diff
 import socketserver
 import time
 from figure.figure_plot import *
@@ -14,6 +14,7 @@ from data import data_access
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QDir
+import putChineseText
 
 
 class warningBox(QDialog):
@@ -141,6 +142,8 @@ class XioAll(QtGui.QWidget):
 
         # self.M5000_work_background = cv2.imread('images/173d.jpg')
         # self.M5000_work_background = cv2.resize(self.M5000_work_background,(1280,720))
+        # self.M5000_work_background = cv2.imread('E:/projects-summary/xioLift/maindo/images/173d.jpg')
+        # self.M5000_work_background = cv2.resize(self.M5000_work_background, (1280, 720))
         self.M5000_work_background = None
         self.op20_work_background = cv2.imread('E:/projects-summary/xioLift/maindo/images/173d.jpg')
         self.op20_work_background = cv2.resize(self.op20_work_background, (1280, 720))
@@ -149,7 +152,7 @@ class XioAll(QtGui.QWidget):
         self.op20_night_background = cv2.imread('E:/projects-summary/xioLift/maindo/images/173n.png')
         self.op20_night_background = cv2.resize(self.op20_night_background, (1280, 720))
         self.M5000_work_start_judge = False
-        self.M5000_work_time = [0] * 25
+        self.M5000_work_time = [0] * 40
         self.M5000_jud_start_judge = False
         self.M5000_jud_time = [0] * 20
         self.houban_huan_backgrond = None
@@ -162,6 +165,14 @@ class XioAll(QtGui.QWidget):
         self.houban_material_all_judge = False
         self.houban_material_time = [0] * 20
         self.houban_material_all_time = [0] * 30
+
+        # lines
+        self.lines_jud_start_judge = False
+        self.lines_time = [0] * 20
+        self.frame1 = None
+        self.frame2 = None
+        self.frame3 = None
+        self.lines_list = None
 
     def fileSelect(self):
         absolute_path = QFileDialog.getOpenFileName(self, '视频选择',
@@ -174,7 +185,6 @@ class XioAll(QtGui.QWidget):
             self.displayMessage("...未进行选择，视频源路径不变...")
 
     def reFlushDetection(self):
-
         self.M5000_work_background = None
         self.op20_work_background = cv2.imread('E:/projects-summary/xioLift/maindo/images/173d.jpg')
         self.op20_work_background = cv2.resize(self.op20_work_background, (1280, 720))
@@ -183,7 +193,7 @@ class XioAll(QtGui.QWidget):
         self.op20_night_background = cv2.imread('E:/projects-summary/xioLift/maindo/images/173n.png')
         self.op20_night_background = cv2.resize(self.op20_night_background, (1280, 720))
         self.M5000_work_start_judge = False
-        self.M5000_work_time = [0] * 25
+        self.M5000_work_time = [0] * 35
         self.M5000_jud_start_judge = False
         self.M5000_jud_time = [0] * 20
         self.houban_huan_backgrond = None
@@ -196,6 +206,14 @@ class XioAll(QtGui.QWidget):
         self.houban_material_all_judge = False
         self.houban_material_time = [0] * 20
         self.houban_material_all_time = [0] * 30
+
+        # lines
+        self.lines_jud_start_judge = False
+        self.lines_time = [0] * 20
+        self.frame1 = None
+        self.frame2 = None
+        self.frame3 = None
+        self.lines_list = None
 
         self.displayMessage("......初始化参数成功......")
 
@@ -214,7 +232,7 @@ class XioAll(QtGui.QWidget):
             dict_oee = {}
             hour = min(time.localtime()[3], 19)
             for i in range(8, hour + 1):
-                dict_oee[str(i) + "点："] = list_oee[i - 8]
+                dict_oee[str(i) + "点"] = list_oee[i - 8]
             sender = '619520071@qq.com'
             list_mail.append("442634234@qq.com")
 
@@ -288,7 +306,9 @@ class XioAll(QtGui.QWidget):
                     newItem.setFont(textFont)
                     self.ui.DateTable.setItem(i, j, newItem)
 
-    def video_receive_local(self, cam1='E:/projects-summary/xioLift/maindo/videos/173_10.mp4', cam2='./videos/n171.mp4', time_flag=True):
+    def video_receive_local(self, cam1='E:/projects-summary/xioLift/maindo/videos/173_10 00_00_00-00_03_25.mp4',
+                            cam2='./videos/n171.mp4',
+                            time_flag=True):
         '''该方法用来接收本地视频
         :param cam1: 左摄像头数据源
         :param cam2: 右摄像头数据源
@@ -307,6 +327,12 @@ class XioAll(QtGui.QWidget):
                 self.left_cam = cv2.VideoCapture(self.CamPath)
                 preCamPath = self.CamPath
             ret_1, frame_1 = self.left_cam.read()
+
+            # lines
+            self.frame1 = frame_1
+            ret_1, self.frame2 = self.left_cam.read()
+            ret_1, self.frame3 = self.left_cam.read()
+
             if time_flag is True:
                 time.sleep(0.04)
 
@@ -329,11 +355,45 @@ class XioAll(QtGui.QWidget):
             frame_change = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             # 投入文字以及圆点
-            if self.M5000_jud_start_judge is True:
-                cv2.rectangle(frame_change, (540 + int(self.x1UP * 0.625), 140 + int(self.y1UP * 0.625)),
-                              (540 + int(self.x2UP * 0.625), 140 + int(self.y2UP * 0.625)), (255, 0, 0), 4)
+
+            # 调整机器
+            # if self.M5000_jud_start_judge is True:
+            #
+            #     if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+            #         frame_change = putChineseText.cv2ImgAddText(frame_change, "调整机器", 140, 60)
+            #         cv2.rectangle(frame_change, (550, 720),
+            #                       (430, 720), (255, 0, 0), 4)
+
+            # 修理机器
+            if self.M5000_fix_judge is True:
+
                 if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在上方清理焊嘴中", 140, 60)
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "修理机器", 140, 60)
+                    cv2.rectangle(frame_change, (350, 0),
+                                  (520, 65), (255, 0, 0), 4)
+
+            # # 机器工作
+            # if self.M5000_work_start_judge is True:
+            #     cv2.rectangle(frame_change, (260, 360),
+            #                   (500, 650), (255, 0, 0), 4)
+            #     if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+            #         frame_change = putChineseText.cv2ImgAddText(frame_change, "机器工作", 140, 60)
+
+            # 切换材料
+            if self.houban_material_all_judge is True:
+
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "切换材料", 140, 60)
+                cv2.rectangle(frame_change, (850, 190),
+                              (1100, 350), (255, 0, 0), 4)
+
+            if self.lines_jud_start_judge is True:
+                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人拖料", 140, 60)
+                if self.lines_list is not None:
+                    for line in self.lines_list:
+                        x1, y1, x2, y2 = line[0]
+                        cv2.line(frame_change, (500 + x1, y1), (500 + x2, y2), (255, 0, 0), 10)
 
             frame_resize = cv2.resize(frame_change, (360, 240), interpolation=cv2.INTER_AREA)
             image = QtGui.QImage(frame_resize.data, frame_resize.shape[1], frame_resize.shape[0],
@@ -387,6 +447,9 @@ class XioAll(QtGui.QWidget):
         pass
 
     def video_reco173(self):
+
+        # lines
+
         frame = self.frame_left
         frame = cv2.resize(frame, (1280, 720))
 
@@ -399,151 +462,149 @@ class XioAll(QtGui.QWidget):
             self.M5000_work_2 = diff(frame, self.M5000_work_background_2, 100000, 100, 230, 600, 910)
             self.op20_work = featrue_detection(frame, self.op20_work_background, 60, 20, 260, 360, 500, 650)
 
-            if (self.M5000_work_1 is True and self.M5000_work_2 is True and self.op20_night is True) or (
-                    self.op20_work is True and self.op20_night is True):
-                self.M5000_work_time.pop(0)
-                self.M5000_work_time.append(1)
+            if self.op20_night is True:
+                if (self.M5000_work_1 is True and self.M5000_work_2 is True) or (
+                        self.op20_work is True):
+                    self.M5000_work_time.pop(0)
+                    self.M5000_work_time.append(1)
 
-            if self.M5000_work_1 is True and self.M5000_work_2 is True and self.op20_work is False:
-                self.M5000_work_time.pop(0)
-                self.M5000_work_time.append(1)
+                if self.M5000_work_1 is True and self.M5000_work_2 is True:
+                    self.M5000_work_time.pop(0)
+                    self.M5000_work_time.append(1)
 
-            # 机器停工
-            elif self.M5000_work_1 is False and self.op20_work is False:
-                print('机器停工')
+                if self.M5000_work_1 is False and self.op20_work is False:
+                    # print('机器停工')
+                    self.M5000_work_time.pop(0)
+                    self.M5000_work_time.append(0)
+
+                    # 修理机器
+                    self.M5000_fix = featrue_detection(frame, self.M5000_fix_backgrond, 60, 10, 0, 65, 350, 520)
+                    if self.M5000_fix is True:
+                        self.M5000_fix_time.pop(0)
+                        self.M5000_fix_time.append(0)
+
+                    else:
+                        self.M5000_fix_time.pop(0)
+                        self.M5000_fix_time.append(1)
+
+                    M5000_fix_time_sum = sum(self.M5000_fix_time)
+                    if self.M5000_fix_judge is False and M5000_fix_time_sum > 4:
+                        M5000_fix_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                        # print('M5000_fix_start', self.M5000_fix_start)
+                        self.displayMessage('开始修理机器')  # 修理机器
+                        self.M5000_fix_judge = True
+                        self.da.insert_action_("MachineAdjust", 0)
+                        self.putTextStart_time = time.time()
+
+                    if self.M5000_fix_judge is True and M5000_fix_time_sum <= 2:
+                        M5000_fix_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                        # print('M5000_fix_stop', M5000_fix_stop)
+                        self.displayMessage('完成修理机器')
+                        self.da.insert_action_("MachineAdjust", 1)
+                        self.da.update_loss_("action2", 1)
+                        self.M5000_fix_judge = False
+
+                    # 调整材料
+                    if self.houban_material_backgrond is not None:
+                        self.houban_material_backgrond_lower = background_diff(self.houban_material_backgrond, 550, 720,
+                                                                               430,
+                                                                               750)
+                        self.houban_material_backgrond_all = background_diff(self.houban_material_backgrond, 190, 350,
+                                                                             1015,
+                                                                             1100)
+
+                        self.houban_material = diff(frame, self.houban_material_backgrond_lower, 1000000, 550, 720, 430,
+                                                    750)
+                        self.houban_material_all = diff(frame, self.houban_material_backgrond_all, 100000, 190, 350,
+                                                        1015,
+                                                        1100)
+                        # print('shang',houban_material_upper)
+                        # print('xia',houban_material)
+                        if self.houban_material is True:
+                            self.houban_material_time.pop(0)
+                            self.houban_material_time.append(1)
+
+                        else:
+                            self.houban_material_time.pop(0)
+                            self.houban_material_time.append(0)
+                            if self.houban_material_all is True:
+                                self.houban_material_all_time.pop(0)
+                                self.houban_material_all_time.append(1)
+                            if self.houban_material_all is False:
+                                self.houban_material_all_time.pop(0)
+                                self.houban_material_all_time.append(0)
+
+                            houban_material_all_sum = sum(self.houban_material_all_time)
+
+                            if self.houban_material_all_judge is False and houban_material_all_sum > 6:
+                                houban_material_all_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                                # print('houban_material_all_start', houban_material_all_start)
+                                self.displayMessage('工人开始换料')  # 材料切换
+                                self.da.insert_action_("MaterialChange", 0)
+                                self.houban_material_all_judge = True
+                                self.putTextStart_time = time.time()
+
+                            if self.houban_material_all_judge is True and houban_material_all_sum <= 4:
+                                houban_material_all_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                                # print('houban_material_all_stop', houban_material_all_stop)
+                                self.displayMessage('工人完成换料')
+                                self.da.insert_action_("MaterialChange", 1)
+                                self.da.update_loss_("action1", 1)
+                                self.houban_material_all_judge = False
+
+                        houban_material_time_sum = sum(self.houban_material_time)
+                        if self.houban_material_judge is False and houban_material_time_sum > 6:
+                            houban_material_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                            # print('houban_material_start', houban_material_start)
+                            # self.displayMessage('工人开始换料' )
+                            self.houban_material_judge = True
+
+                        if self.houban_material_judge is True and houban_material_time_sum <= 4:
+                            houban_material_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
+                            # print('houban_material_stop', houban_material_stop)
+                            # self.displayMessage('工人完成换料' )
+
+                            self.houban_material_judge = False
+
+                    self.houban_material_backgrond = frame
+
+            # lines
+            if self.op20_night is False:
                 self.M5000_work_time.pop(0)
                 self.M5000_work_time.append(0)
 
-                # 调整
-                if self.op20_night is True:
-                    if self.M5000_work_2 is True:
-                        self.M5000_jud_time.pop(0)
-                        self.M5000_jud_time.append(1)
-                        # print('M5000_work_2',M5000_work_2)
-                        # print('M5000_work_1', M5000_work_1)
-                        # print('op20_work', op20_work)
+                self.lines_list, lines_judge = lines_diff(self.frame1, self.frame2, self.frame3, 0, 300, 500, 1100)
+                if lines_judge is True:
+                    self.lines_time.pop(0)
+                    self.lines_time.append(1)
 
+                if lines_judge is False:
+                    self.lines_time.pop(0)
+                    self.lines_time.append(0)
 
-                    elif self.M5000_work_2 is False:
-                        self.M5000_jud_time.pop(0)
-                        self.M5000_jud_time.append(0)
-
-                    self.M5000_jud_time_sum = sum(self.M5000_jud_time)
-                    # print(M5000_jud_time_sum)
-                    if self.M5000_jud_start_judge is False and self.M5000_jud_time_sum > 4:
-                        M5000_jud_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                        # print('M5000_jud_start',self.M5000_jud_start)
-                        self.displayMessage('开始调整机器')
-                        self.da.insert_action_("MaterialChange", 0)
-                        self.M5000_jud_start_judge = True
-                        self.putTextStart_time = time.time()
-
-                    if self.M5000_jud_start_judge is True and self.M5000_jud_time_sum <= 2:
-                        M5000_jud_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                        # print('M5000_jud_stop', M5000_jud_stop)
-                        self.displayMessage('完成调整机器')
-                        self.da.insert_action_("MaterialChange", 1)
-                        self.da.update_loss_("action1", 1)
-                        self.M5000_jud_start_judge = False
-
-                # 修理M5000
-                self.M5000_fix = featrue_detection(frame, self.M5000_fix_backgrond, 60, 10, 0, 65, 350, 520)
-                if self.M5000_fix is True:
-                    self.M5000_fix_time.pop(0)
-                    self.M5000_fix_time.append(0)
-
-                else:
-                    self.M5000_fix_time.pop(0)
-                    self.M5000_fix_time.append(1)
-
-                M5000_fix_time_sum = sum(self.M5000_fix_time)
-                if self.M5000_fix_judge is False and M5000_fix_time_sum > 4:
-                    M5000_fix_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                    # print('M5000_fix_start', self.M5000_fix_start)
-                    self.displayMessage('开始修理机器')  # 修理机器
-                    self.M5000_fix_judge = True
-                    self.da.insert_action_("MachineAdjust", 0)
+                lines_time_sum = sum(self.lines_time)
+                if self.lines_jud_start_judge is False and lines_time_sum > 5:
+                    self.displayMessage('开始拖料')
+                    self.da.insert_action_("MaterialPush", 0)
+                    self.lines_jud_start_judge = True
                     self.putTextStart_time = time.time()
 
-                if self.M5000_fix_judge is True and M5000_fix_time_sum <= 2:
-                    M5000_fix_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                    # print('M5000_fix_stop', M5000_fix_stop)
-                    self.displayMessage('完成修理机器')
-                    self.da.insert_action_("MachineAdjust", 1)
-                    self.da.update_loss_("action2", 1)
-                    self.M5000_fix_judge = False
-
-                # 调整材料
-                if self.houban_material_backgrond is not None:
-                    self.houban_material_backgrond_lower = background_diff(self.houban_material_backgrond, 550, 720,
-                                                                           430,
-                                                                           750)
-                    self.houban_material_backgrond_all = background_diff(self.houban_material_backgrond, 190, 350, 1015,
-                                                                         1100)
-
-                    self.houban_material = diff(frame, self.houban_material_backgrond_lower, 1000000, 550, 720, 430,
-                                                750)
-                    self.houban_material_all = diff(frame, self.houban_material_backgrond_all, 100000, 190, 350, 1015,
-                                                    1100)
-                    # print('shang',houban_material_upper)
-                    # print('xia',houban_material)
-                    if self.houban_material is True:
-                        self.houban_material_time.pop(0)
-                        self.houban_material_time.append(1)
-
-                    else:
-                        self.houban_material_time.pop(0)
-                        self.houban_material_time.append(0)
-                        if self.houban_material_all is True:
-                            self.houban_material_all_time.pop(0)
-                            self.houban_material_all_time.append(1)
-                        if self.houban_material_all is False:
-                            self.houban_material_all_time.pop(0)
-                            self.houban_material_all_time.append(0)
-
-                        houban_material_all_sum = sum(self.houban_material_all_time)
-
-                        if self.houban_material_all_judge is False and houban_material_all_sum > 8:
-                            houban_material_all_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                            # print('houban_material_all_start', houban_material_all_start)
-                            self.displayMessage('工人开始换料')  # 材料切换
-                            self.da.insert_action_("MaterialChange", 0)
-                            self.houban_material_all_judge = True
-                            self.putTextStart_time = time.time()
-
-                        if self.houban_material_all_judge is True and houban_material_all_sum <= 2:
-                            houban_material_all_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                            # print('houban_material_all_stop', houban_material_all_stop)
-                            self.displayMessage('工人完成换料')
-                            self.da.insert_action_("MaterialChange", 1)
-                            self.da.update_loss_("action1", 1)
-                            self.houban_material_all_judge = False
-
-                    houban_material_time_sum = sum(self.houban_material_time)
-                    if self.houban_material_judge is False and houban_material_time_sum > 6:
-                        houban_material_start = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                        # print('houban_material_start', houban_material_start)
-                        # self.displayMessage('工人开始换料' )
-                        self.houban_material_judge = True
-
-                    if self.houban_material_judge is True and houban_material_time_sum <= 4:
-                        houban_material_stop = datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')
-                        # print('houban_material_stop', houban_material_stop)
-                        # self.displayMessage('工人完成换料' )
-
-                        self.houban_material_judge = False
-
-                self.houban_material_backgrond = frame
+                if self.lines_jud_start_judge is True and lines_time_sum <= 2:
+                    self.displayMessage('完成拖料')
+                    self.da.insert_action_("MaterialPush", 1)
+                    self.da.update_loss_("action4", 1)
+                    self.lines_jud_start_judge = False
 
             M5000_work_time_sum = sum(self.M5000_work_time)
-            if self.M5000_work_start_judge is False and M5000_work_time_sum > 8:
+            # print(M5000_work_time_sum)
+            if self.M5000_work_start_judge is False and M5000_work_time_sum > 11:
                 self.M5000_work_start_judge = True
                 self.da.insert_action_("M5000Work", 0)
-                self.displayMessage('M5000开始工作')
+                self.displayMessage('开始工作')
                 self.putTextStart_time = time.time()
 
             if self.M5000_work_start_judge is True and M5000_work_time_sum <= 4:
-                self.displayMessage('M5000停止工作')
+                self.displayMessage('停止工作')
                 self.da.insert_action_("M5000work", 1)
                 self.da.update_loss_("action4", 1)
                 self.M5000_work_start_judge = False

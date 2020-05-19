@@ -279,9 +279,16 @@ color: rgb(255, 255, 255);</string>
     </property>
     <addaction name="openStatistics"/>
    </widget>
+   <widget class="QMenu" name="setupMenu">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="openConfigFile"/>
+   </widget>
    <addaction name="programmenu"/>
    <addaction name="streammenu"/>
    <addaction name="statisticsMenu"/>
+   <addaction name="setupMenu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="styleSheet">
@@ -337,6 +344,11 @@ color: rgb(255, 255, 255);</string>
   <action name="openStatistics">
    <property name="text">
     <string>配件投放统计</string>
+   </property>
+  </action>
+  <action name="openConfigFile">
+   <property name="text">
+    <string>打开配置文件</string>
    </property>
   </action>
  </widget>

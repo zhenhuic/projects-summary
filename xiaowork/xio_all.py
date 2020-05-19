@@ -183,9 +183,8 @@ class XioAll(QtGui.QWidget):
         if str(result_loss[0][0]) != current_time:
             self.da.operate_('insert into loss(SJ,action1,action2,action3,action4,action5,action6)values'
                              '("%s",%d,%d,%d,%d,%d,%d)' % (
-                                 current_time, random.randint(100, 200), random.randint(100, 200),
-                                 random.randint(300, 400),
-                                 random.randint(300, 400), 0, 0))
+                                 current_time, 10, 10,
+                                 10, 10, 0, 0))
         else:
             pass
 
@@ -296,6 +295,10 @@ class XioAll(QtGui.QWidget):
 
         # 定时投入文字
         self.putTextStart_time = None
+        self.putTextEnd_time_left = None
+        self.putTextEnd_time_right = None
+        self.putTextEnd_time_up = None
+        self.putTextEnd_time_down = None
 
     def fileSelect(self):
         absolute_path = QFileDialog.getOpenFileName(self, '视频选择',
@@ -350,6 +353,13 @@ class XioAll(QtGui.QWidget):
         self.isActionStartUP = False
         self.isActionStartDOWN = False
 
+        # 定时投入文字
+        self.putTextStart_time = None
+        self.putTextEnd_time_left = None
+        self.putTextEnd_time_right = None
+        self.putTextEnd_time_up = None
+        self.putTextEnd_time_down = None
+
         self.displayMessage("......初始化检测参数成功......")
 
     def mailSend(self):
@@ -367,20 +377,22 @@ class XioAll(QtGui.QWidget):
             dict_oee = {}
             hour = min(time.localtime()[3], 19)
             for i in range(8, hour + 1):
-                dict_oee[str(i) + "点："] = list_oee[i - 8]
+                dict_oee[str(i) + "点"] = list_oee[i - 8]
             sender = '1821959030@qq.com'
             list_mail.append("442634234@qq.com")
 
-            message = "厚板生产线生产数据\n" \
+            message = "侧板焊接生产线生产数据\n" \
+                      "\n" \
                       "今日OEE效能数据如下所示：\n" \
                       "{}" \
+                      "\n" \
                       "\n" \
                       "*注：效率为0时未进行检测。\n" \
                       "\n" \
                       "今日设备运行情况分布如下所示：" \
                       "\n" \
                       "清理焊嘴：{} \n" \
-                      "装机：{} \n" \
+                      "装载侧板：{} \n" \
                       "机器工作：{} \n" \
                       "机器静止：{} \n".format(dict_oee, list_loss[0], list_loss[1], list_loss[2], list_loss[3])
 
@@ -467,25 +479,27 @@ class XioAll(QtGui.QWidget):
         self.status_LDOWN.pop(0)
 
         if sum(self.status_LUP) > 5 and self.isActionStartUP is False:
-            self.displayMessage("上方工人开始清理焊嘴")
+            self.displayMessage("工人上方开始清理焊嘴")
             self.isActionStartUP = True
             self.putTextStart_time = time.time()
-            self.da.insert_action_("tiaoshiUP", 0)
+            self.da.insert_action_("qinglihanzuiUP", 0)
         if sum(self.status_LUP) < 2 and self.isActionStartUP is True:
-            self.displayMessage("上方工人结束清理焊嘴")
+            self.displayMessage("工人上方结束清理焊嘴")
             self.isActionStartUP = False
-            self.da.insert_action_("tiaoshiUP", 1)
+            self.putTextEnd_time_up = time.time()
+            self.da.insert_action_("qinglihanzuiUP", 1)
             self.da.update_loss_("action1", 1)
 
         if sum(self.status_LDOWN) > 5 and self.isActionStartDOWN is False:
-            self.displayMessage("下方工人开始清理焊嘴")
+            self.displayMessage("工人下方开始清理焊嘴")
             self.isActionStartDOWN = True
             self.putTextStart_time = time.time()
-            self.da.insert_action_("tiaoshiDOWN", 0)
+            self.da.insert_action_("qinglihanzuiDOWN", 0)
         if sum(self.status_LDOWN) == 0 and self.isActionStartDOWN is True:
-            self.displayMessage("下方工人结束清理焊嘴")
+            self.displayMessage("工人下方结束清理焊嘴")
             self.isActionStartDOWN = False
-            self.da.insert_action_("tiaoshiDOWN", 1)
+            self.putTextEnd_time_down = time.time()
+            self.da.insert_action_("qinglihanzuiDOWN", 1)
             self.da.update_loss_("action1", 1)
 
     def video_recogzhuangji(self):
@@ -505,14 +519,15 @@ class XioAll(QtGui.QWidget):
                 self.Lright.append(0)
             self.Lright.pop(0)
             if sum(self.Lright) > 6 and self.isRightStart is False:
-                self.displayMessage("工人正在右方装机")
+                self.displayMessage("工人开始右方装载侧板")
                 self.isRightStart = True
                 self.putTextStart_time = time.time()
                 self.da.insert_action_("zhuangjiLEFT", 0)
 
             if sum(self.Lright) < 2 and self.isRightStart is True:
-                self.displayMessage("工人结束右方拆机")
+                self.displayMessage("工人结束右方装载侧板")
                 self.isRightStart = False
+                self.putTextEnd_time_right = time.time()
                 self.da.insert_action_("zhuangjiLEFT", 1)
                 self.da.update_loss_("action2", 1)
             if np.sum(mask_det1) < 50000:
@@ -521,14 +536,15 @@ class XioAll(QtGui.QWidget):
                 self.Lleft.append(0)
             self.Lleft.pop(0)
             if sum(self.Lleft) > 6 and self.isLeftStart is False:
-                self.displayMessage("工人正在左方拆机")
+                self.displayMessage("工人开始左方装载侧板")
                 self.isLeftStart = True
                 self.putTextStart_time = time.time()
                 self.da.insert_action_("zhuangjiRIGHT", 0)
             if sum(self.Lleft) < 2 and self.isLeftStart is True:
-                self.displayMessage("工人结束左方拆机")
+                self.displayMessage("工人结束左方装载侧板")
                 self.isLeftStart = False
-                self.da.insert_action_("zhuangjiRIGHT", 0)
+                self.putTextEnd_time_left = time.time()
+                self.da.insert_action_("zhuangjiRIGHT", 1)
                 self.da.update_loss_("action2", 1)
 
     def shumeiDeal(self):
@@ -598,7 +614,7 @@ class XioAll(QtGui.QWidget):
 
             time.sleep(0.06)
 
-    def video_receive_local(self, cam1='E:/projects-summary/xiaowork/maindo/videos/西奥待检测数据/视频合并200512103448.mp4',
+    def video_receive_local(self, cam1='E:/projects-summary/xiaowork/侧板焊接待检测视频/检测视频200519134451.mp4',
                             cam2='E:\\剪辑\\zhuangji\\ch11_20171221084313 00_09_06-00_10_21~2.mp4',
                             time_flag=True):
         '''该方法用来接收本地视频
@@ -640,32 +656,51 @@ class XioAll(QtGui.QWidget):
             height, width, _ = frame.shape
             frame_change = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-            if self.type_l == 'work':
-                cv2.rectangle(frame_change, (self.X_l, self.Y_l), (self.X_l + 100, self.Y_l + 100), (0, 255, 0), 4)
+            # if self.type_l == 'work':
+            #    cv2.rectangle(frame_change, (self.X_l, self.Y_l), (self.X_l + 100, self.Y_l + 100), (0, 255, 0), 4)
 
             if self.isActionStartUP is True:
                 cv2.rectangle(frame_change, (540 + int(self.x1UP * 0.625), 140 + int(self.y1UP * 0.625)),
-                              (540 + int(self.x2UP * 0.625), 140 + int(self.y2UP * 0.625)), (255, 0, 0), 4)
-                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在上方清理焊嘴中", 140, 60)
+                              (540 + int(self.x2UP * 0.625), 140 + int(self.y2UP * 0.625)), (255, 0, 0), 6)
+                if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始在上方清理焊嘴", 140, 60)
 
             if self.isActionStartDOWN is True:
                 cv2.rectangle(frame_change, (int(self.X1DOWN * 0.721) + 680, int(self.Y1DOWN * 0.721) + 250),
-                              (int(self.X2DOWN * 0.721) + 680, int(self.Y2DOWN * 0.721) + 250), (255, 0, 0), 4)
-                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在下方清理焊嘴中", 140, 60)
+                              (int(self.X2DOWN * 0.721) + 680, int(self.Y2DOWN * 0.721) + 250), (255, 0, 0), 6)
+                if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始人在下方清理焊嘴", 140, 60)
 
             if self.isLeftStart is True:
-                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
+                if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
                     cv2.rectangle(frame_change, (0, 150), (300, 720), (255, 255, 0), 6)
                     cv2.circle(frame_change, (150, 435), 6, (255, 0, 0), 20)
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在左方装机中", 140, 60)
+
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始在左方装载侧板", 140, 60)
 
             if self.isRightStart is True:
-                if time.time() - self.putTextStart_time > 1 and time.time() - self.putTextStart_time < 4:
-                    cv2.rectangle(frame_change, (900, 100), (1080, 380), (255, 255, 0), 6)
-                    cv2.circle(frame_change, (990, 240), 6, (255, 0, 0), 20)
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人在右方装机中", 140, 60)
+                if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
+                    cv2.rectangle(frame_change, (880, 100), (1080, 380), (255, 255, 0), 6)
+                    cv2.circle(frame_change, (980, 240), 6, (255, 0, 0), 20)
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始在右方装载侧板", 140, 60)
+
+            # 投入结束文字
+
+            if self.isLeftStart is False:
+                if self.putTextEnd_time_left is not None and time.time() - self.putTextEnd_time_left > 0 and time.time() - self.putTextEnd_time_left < 3:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人结束左方装载侧板", 140, 60)
+
+            if self.isRightStart is False:
+                if self.putTextEnd_time_right is not None and time.time() - self.putTextEnd_time_right > 0 and time.time() - self.putTextEnd_time_right < 3:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人结束右方装载侧板", 140, 60)
+
+            if self.isActionStartDOWN is False:
+                if self.putTextEnd_time_down is not None and time.time() - self.putTextEnd_time_down > 0 and time.time() - self.putTextEnd_time_down < 3:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人结束下方清理焊嘴", 140, 60)
+
+            if self.isActionStartUP is False:
+                if self.putTextEnd_time_up is not None and time.time() - self.putTextEnd_time_up > 0 and time.time() - self.putTextEnd_time_up < 3:
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人结束上方清理焊嘴", 140, 60)
 
             frame_resize = cv2.resize(frame_change, (360, 240), interpolation=cv2.INTER_AREA)
 
@@ -712,17 +747,17 @@ class XioAll(QtGui.QWidget):
             self.ui.graphicsView_Loss.setScene(graphicscene_loss)
             self.ui.graphicsView_Loss.show()
 
-        def draw_mt():  # 绘制耗材使用图
-            mt = Figure_MT()
-            mt.plot(*(4, 5, 3))
-            graphicscene_mt = QtGui.QGraphicsScene()
-            graphicscene_mt.addWidget(mt.canvas)
-            self.ui.graphicsView_MT.setScene(graphicscene_mt)
-            self.ui.graphicsView_MT.show()
+        # def draw_mt():  # 绘制耗材使用图
+        #     mt = Figure_MT()
+        #     mt.plot(*(4, 5, 3))
+        #     graphicscene_mt = QtGui.QGraphicsScene()
+        #     graphicscene_mt.addWidget(mt.canvas)
+        #     self.ui.graphicsView_MT.setScene(graphicscene_mt)
+        #     self.ui.graphicsView_MT.show()
 
         draw_fp()
         draw_loss()
-        draw_mt()
+        # draw_mt()
         draw_oee()
 
     def video_recog(self):
@@ -756,19 +791,15 @@ class XioAll(QtGui.QWidget):
                     message = '机器正在工作'
                     if x != 1070:
                         self.displayMessage(message)
+                if self.work_time % 60 == 0:
+                    self.da.update_loss_("action4", 1)
             else:
                 # ******* 截图
                 self.is_work = False
                 self.one_static_time += 1  # 一次静止时间
-                if self.one_static_time % 60 == 0:
-                    print('start or static')
-                    print('静止了，往catch文件夹中查看原因')
-                    t = time.localtime()
-                    hour = t[3]
-                    mini = t[4]
-                    seco = t[5]
-                    filename = str(hour) + '-' + str(mini) + '-' + str(seco)
-                    cv2.imwrite('./catch/' + filename + '.jpg', img)
+                print(self.one_static_time)
+                if self.one_static_time % 20 == 0:
+                    self.da.update_loss_("action3", 1)
                 # ********
 
                 self.action = ThreadedTCPRequestHandler.action  # 键盘操作
@@ -790,7 +821,7 @@ class XioAll(QtGui.QWidget):
     def displayMessage(self, message):
 
         self.ui.textBrowser.append('[' + time.strftime('%Y-%m-%d %H:%M:%S',
-                                                       time.localtime(time.time())) + ']' + message)
+                                                       time.localtime(time.time())) + '] ' + message)
 
 
 if __name__ == '__main__':

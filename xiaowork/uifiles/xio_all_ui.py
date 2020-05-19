@@ -37,11 +37,8 @@ class Ui_Form(object):
         self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
         self.tab = QtGui.QWidget()
         self.tab.setObjectName(_fromUtf8("tab"))
-        self.graphicsView_MT = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_MT.setGeometry(QtCore.QRect(20, 10, 501, 340))
-        self.graphicsView_MT.setObjectName(_fromUtf8("graphicsView_MT"))
         self.graphicsView_OEE = QtGui.QGraphicsView(self.tab)
-        self.graphicsView_OEE.setGeometry(QtCore.QRect(530, 10, 501, 340))
+        self.graphicsView_OEE.setGeometry(QtCore.QRect(20, 10, 501, 340))
         self.graphicsView_OEE.setObjectName(_fromUtf8("graphicsView_OEE"))
         self.graphicsView_Loss = QtGui.QGraphicsView(self.tab)
         self.graphicsView_Loss.setGeometry(QtCore.QRect(20, 360, 501, 340))
@@ -50,11 +47,11 @@ class Ui_Form(object):
         self.graphicsView_Pie.setGeometry(QtCore.QRect(530, 360, 501, 340))
         self.graphicsView_Pie.setObjectName(_fromUtf8("graphicsView_Pie"))
         self.label = QtGui.QLabel(self.tab)
-        self.label.setGeometry(QtCore.QRect(1040, 10, 360, 240))
+        self.label.setGeometry(QtCore.QRect(600, 60, 360, 240))
         self.label.setStyleSheet(_fromUtf8("background-color: rgb(255, 255, 255);"))
         self.label.setObjectName(_fromUtf8("label"))
         self.textBrowser = QtGui.QTextBrowser(self.tab)
-        self.textBrowser.setGeometry(QtCore.QRect(1040, 260, 361, 441))
+        self.textBrowser.setGeometry(QtCore.QRect(1040, 10, 361, 691))
         self.textBrowser.setStyleSheet(_fromUtf8("font: 10pt \"宋体\";\n"
 "\n"
 "color:rgb(255, 255, 255);\n"

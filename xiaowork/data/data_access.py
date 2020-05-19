@@ -69,7 +69,8 @@ class DataAccess():
         hour = time.localtime()[3]
         current_date = datetime.datetime.now().strftime('%Y-%m-%d')
         if hour in range(8, 19):
-            eff = random.randint(85, 90)
+            list_loss = self.select_loss()
+            eff = self.get_effience(list_loss)
             sql = "update oee_date set O" + str(hour) + "=" + str(eff) + ' where SJC="' + current_date + '"'
             self.operate_(sql)
 
@@ -91,8 +92,12 @@ class DataAccess():
         data = self.select_(sql)
         return list(data[0])
 
+    def get_effience(self, list_loss):
+        eff = int((sum(list_loss) - list_loss[2]) / sum(list_loss) * 100)
+        print(eff)
+        return eff
+
 
 if __name__ == "__main__":
     da = DataAccess()
-    current_date = datetime.datetime.now().strftime('%Y-%m-%d')
-    da.operate_("delete from loss where SJ='{}'".format(current_date))
+    da.operate_("delete from loss where SJ='2020-05-19'")

@@ -1,7 +1,7 @@
 import sys
 import time
 from PyQt5.QtCore import pyqtSlot
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog
 from ui.log_new import Ui_MainWindow
 import random
 import pymysql
@@ -18,48 +18,47 @@ class MainApp(QMainWindow, Ui_MainWindow):
         self.pushButton_3.clicked.connect(self.select)
         self.pushButton_2.clicked.connect(self.plot)
         self.pushButton.clicked.connect(self.export)
+        self.pushButton_4.clicked.connect(self.open_conf)
 
     selected_flag = False
     flc = FigureLineChart()
     message_window = MyWindow()
 
-    s7300warns = ["OP20安全门未锁", "OP20冲床报警", "OP20冲床程序切换失败报警", "OP20冲床误动作报警", "OP20废料口报警",
-                  "OP20机器人故障", "OP20夹钳状态报警", "OP20一级报警", "OP20二级报警", "OP20真空检测超时报警", "OP30安全门未锁",
-                  "OP30二级报警", "OP30材料尺寸超差报警", "OP30机器人故障", "OP30机器人码垛上限到", "OP30一级报警", "OP40安全门未锁",
-                  "OP40材料尺寸超差报警", "OP40二级报警", "OP40机器人故障", "OP40机器人码垛上限到", "OP20冲床靠山气缸伸出未到位",
-                  "OP20冲床靠山气缸缩回未到位", "OP20料塔端定位气缸1伸出未到位", "OP20料塔端定位气缸1缩回未到位", "OP20料塔端定位气缸2伸出未到位",
-                  "OP20料塔端定位气缸2缩回未到位", "OP20线体定位气缸1伸出未到位", "OP20线体定位气缸1缩回未到位", "OP20线体定位气缸2伸出未到位",
-                  "OP20线体定位气缸2缩回未到位", "OP20小车1码垛数量达到上限", "OP20小车2码垛数量达到上限", "OP30磁力吸盘伸出未到位", "OP30磁力吸盘缩回未到位",
-                  "OP30高度调整气缸伸出未到位", "OP30高度调整气缸缩回未到位", "OP30厚度检测气缸伸出未到位", "OP30宽度检测气缸伸出未到位", "OP30宽度检测气缸缩回未到位",
-                  "OP30长度检测气缸伸出未到位", "OP30长度检测气缸缩回未到位", "OP40定位台长度检测气缸伸出到位", "OP40定位台长度检测气缸缩回到位", "OP40高度调整气缸伸出未到位",
-                  "OP40高度调整气缸缩回未到位", "OP40厚度检测气缸伸出未到位", "OP40宽度检测气缸伸出未到位", "OP40宽度检测气缸缩回未到位", "OP40长度检测气缸缩回未到位",
-                  "OP40长度检测气缸伸出未到位"]
-
-    dcbhj = ["负向极限", "焊机急停", "焊接启动", "急停", "启动或停止", "伺服急停", "伺服开", "伺服原点", "伺服准备好", "送丝", "泄压阀开", "油泵开", "正向极限"]
-
-    xinsawanini = ["门板前左角度", "门板中部左角度", "门板后左角度", "门板前右角度", "门板中部右角度", "门板后右角度"]
+    @pyqtSlot()
+    def open_conf(self):
+        filename = QFileDialog.getOpenFileName(self, 'open file', '/')
+        if filename[0]:
+            try:
+                f = open(filename[0], 'r')
+                with f:
+                    scx = f.readline().strip('\n')
+                    count = 0
+                    for i in range(self.comboBox.count()):
+                        if self.comboBox.itemData(i) == scx:
+                            count += 1
+                    if count == 0:
+                        self.comboBox.addItem(scx)
+                    path = ("E:\\projects-summary\\xio\\tempfiles\\")
+                    full_path = path + scx + '.txt'
+                    file = open(full_path, 'w')
+                    for line in f.readlines():
+                        file.write(line)
+                    file.close()
+                f.close()
+            except:
+                pass
 
     @pyqtSlot()
     def select(self):
         self.selected_flag = True
-        if self.comboBox.currentText() == "厚板线":
-            self.comboBox_2.clear()
-            for i in range(len(self.s7300warns)):
-                self.comboBox_2.addItem(self.s7300warns[i])
-            self.comboBox_3.clear()
-            self.comboBox_3.addItem("报警")
-        elif self.comboBox.currentText() == "侧板焊接线":
-            self.comboBox_2.clear()
-            for i in range(len(self.dcbhj)):
-                self.comboBox_2.addItem(self.dcbhj[i])
-            self.comboBox_3.clear()
-            self.comboBox_3.addItem("一般")
-        elif self.comboBox.currentText() == "新萨瓦尼尼线":
-            self.comboBox_2.clear()
-            for i in range(len(self.xinsawanini)):
-                self.comboBox_2.addItem(self.xinsawanini[i])
-                self.comboBox_3.clear()
-                self.comboBox_3.addItem("一般")
+        scx = self.comboBox.currentText()
+        self.comboBox_2.clear()
+        try:
+            f = open("E:\\projects-summary\\xio\\tempfiles\\" + scx + ".txt", 'r')
+            for line in f.readlines():
+                self.comboBox_2.addItem(line.strip('\n'))
+        except:
+            pass
 
     @pyqtSlot()
     def export(self):
@@ -170,7 +169,7 @@ def except_hook(cls, exception, traceback):
 
 
 if __name__ == '__main__':
-    sys.excepthook = except_hook
+    sys.excepthook = except_hook  # print the traceback to stdout/stderr
     app = QApplication(sys.argv)
     w = MainApp()
     w.show()

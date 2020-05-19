@@ -170,6 +170,44 @@ def featrue_detection(frame, compare_image, threshold_1, threshold_2, a, b, i, j
         return True
 
 
+def lines_diff(frame, frame2, frame3, a, b, i, j):
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    frame = cv2.resize(frame, (1280, 720))
+    frame2 = cv2.resize(frame2, (1280, 720))
+    frame3 = cv2.resize(frame3, (1280, 720))
+
+    frame = frame[a:b, i:j]
+    frame2 = frame2[a:b, i:j]
+    frame3 = frame3[a:b, i:j]
+
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    gray1 = cv2.cvtColor(frame2, cv2.COLOR_BGR2GRAY)
+    gray2 = cv2.cvtColor(frame3, cv2.COLOR_BGR2GRAY)
+
+    d = cv2.absdiff(gray1, gray)
+    d2 = cv2.absdiff(gray2, gray1)
+
+    blur1 = cv2.GaussianBlur(d, (5, 5), 0)
+    blur2 = cv2.GaussianBlur(d2, (5, 5), 0)
+
+    _, th = cv2.threshold(blur1, 10, 255, cv2.THRESH_BINARY)
+    _, th1 = cv2.threshold(blur2, 10, 255, cv2.THRESH_BINARY)
+
+    # bitwise_and是对二进制数据进行“与”操作，即对图像（灰度图像或彩色图像均可）每个像素值进行二进制“与”操作，1 & 1 = 1，1 & 0 = 0，0 & 1 = 0，0 & 0 = 0
+    gra = cv2.bitwise_and(th, th1)
+    # 基本思想是用像素点邻域灰度值的中值来代替该像素点的灰度值，让周围的像素值接近真实的值从而消除孤立的噪声点
+    segmetation = cv2.medianBlur(gra, 5)
+    # 闭运算：先膨胀，再腐蚀，可清除小黑点
+    opening = cv2.morphologyEx(segmetation, cv2.MORPH_CLOSE, kernel)
+
+    lines = cv2.HoughLinesP(opening, 50, np.pi / 180, 10, minLineLength=100, maxLineGap=5)
+    if lines is None:
+        return lines, False
+
+    else:
+        return lines, True
+
+
 def background_diff(frame, a, b, i, j):
     '''
     生产背景图

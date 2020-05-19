@@ -10,4 +10,3 @@
 2020-05-14 20:02:39,412              ERROR   :params: None
 2020-05-14 20:20:25,446              ERROR   :execute failed: SELECT count(*) FROM pack WHERE datetime >= '2000-01-01' AND datetime <= '2000-01-01'
 2020-05-14 20:20:25,446              ERROR   :params: None
-2020-05-15 22:02:34,812              ERROR   :connect Database failed

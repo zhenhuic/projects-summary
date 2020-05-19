@@ -81,9 +81,10 @@ def draw_bar_graph(names: [str], values: [int]) -> np.ndarray:
     mpl.rcParams['axes.unicode_minus'] = False  # 解决保存图像是负号'-'显示为方块的问题
 
     fig, ax = plt.subplots()
-    ax.bar(names, values)
+    ax.bar(names, values, color=['lightgreen', 'orange', 'turquoise', 'lightcoral', 'deepskyblue'])
+    # 设置颜色
     # ax.set_facecolor("darkgray")
-    plt.xticks(fontsize=10)
+    plt.xticks(fontsize=8.6)
     # ax.set_title("")
     # ax.set_xlabel('')
     ax.set_ylabel('投放记录次数')
@@ -129,8 +130,9 @@ class DbManager:
         if not self.connectDatabase():
             raise RuntimeError("数据库连接失败！")
 
-        com1_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND component1=1".format(table, start, end)
-        com2_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND component2=1".format(table, start, end)
+        com1_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND fengguan=1".format(table, start,
+                                                                                                       end)
+        com2_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND xiaobao=1".format(table, start, end)
         suc_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND success=1".format(table, start, end)
         fail_sql = "SELECT count(*) FROM {} WHERE date >= '{}' AND date <= '{}' AND success=0".format(table, start, end)
         print(com1_sql)
@@ -145,13 +147,13 @@ class DbManager:
 
         self.cur.execute(fail_sql)
         fail_cnt = int(self.cur.fetchone()[0])
-        return com1_cnt, com2_cnt, suc_cnt, fail_cnt
+        return com1_cnt, com2_cnt, suc_cnt, fail_cnt, suc_cnt + fail_cnt
 
     # 根据零件的投放情况来选择要插入数据库的信息，其中com1表示桶，com2表示箱子
     def choose_sql_and_insert(self, com1: int, com2: int, com3: int, success: int):
         try:
             dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            sql = "INSERT INTO pack(date, component1, component2, component3, success) values ('{}',{},{},{},{})".\
+            sql = "INSERT INTO pack(date, fengguan, xiaobao, component3, success) values ('{}',{},{},{},{})".\
                 format(dt, str(com1), str(com2), str(com3), str(success))
             # print(sql)
             self.cur.execute(sql)
@@ -160,6 +162,18 @@ class DbManager:
             print(e)
             self.conn.rollback()
 
+
+    def zhuagnxiang_sql_and_insert(self, ZX_id: int, ST_ZX: int, ED_ZX: int):
+        try:
+            dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            sql = "INSERT INTO zhuangxiang(date, zhuagnxiang_id, kaishizhuagnxiang, jieshuzhuagnxiang) values ('{}',{},{},{})".\
+                format(dt, str(ZX_id), str(ST_ZX), str(ED_ZX))
+            # print(sql)
+            self.cur.execute(sql)
+            self.conn.commit()
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
 
 
 if __name__ == '__main__':
