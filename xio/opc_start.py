@@ -76,10 +76,38 @@ class MainApp(QMainWindow, Ui_MainWindow):
             bq = self.comboBox_2.currentText()
             start_date = self.dateEdit.dateTime()
             start_time = self.timeEdit.dateTime()
+            start_time = str(start_time).split('(')[1][12:-1].replace(', ', ':')
+            start_time_list = start_time.split(":")
+            if int(start_time_list[0]) < 10:
+                start_time_list[0] = '0' + start_time_list[0]
+            if int(start_time_list[1]) < 10:
+                start_time_list[1] = '0' + start_time_list[1]
+            start_time = start_time_list[0] + ":" + start_time_list[1]
             end_date = self.dateEdit_2.dateTime()
             end_time = self.timeEdit_2.dateTime()
-            start = str(start_date).split('(')[1][:-6].replace(', ', "-0").replace(",", "") + str(start_time).split('(')[1][11:].split(')')[0].replace(',', ':')+'0'
-            end = str(end_date).split('(')[1][:-6].replace(', ', "-0").replace(",", "") + str(end_time).split('(')[1][11:].split(')')[0].replace(',', ':')+'0'
+            end_time = str(end_time).split('(')[1][12:-1].replace(', ', ':')
+            end_time_list = end_time.split(':')
+            if int(end_time_list[0]) < 10:
+                end_time_list[0] = '0' + end_time_list[0]
+            if int(start_time_list[1]) < 10:
+                end_time_list[1] = '0' + end_time_list[1]
+            end_time = end_time_list[0] + ":" + end_time_list[1]
+            start_date = str(start_date).split('(')[1][:-7].replace(', ', '-')
+            start_date_list = str(start_date).split('-')
+            if int(start_date_list[1]) < 10:
+                start_date_list[1] = '0' + start_date_list[1]
+            if int(start_date_list[2]) < 10:
+                start_date_list[2] = '0' + start_date_list[2]
+            start_date = start_date_list[0] + '-' + start_date_list[1] + '-' + start_date_list[2]
+            end_date = str(end_date).split('(')[1][:-7].replace(', ', '-')
+            end_date_list = str(end_date).split('-')
+            if int(end_date_list[1]) < 10:
+                end_date_list[1] = '0' + end_date_list[1]
+            if int(end_date_list[2]) < 10:
+                end_date_list[2] = '0' + end_date_list[2]
+            end_date = end_date_list[0] + '-' + end_date_list[1] + '-' + end_date_list[2]
+            start = start_date + " " + start_time
+            end = end_date + " " + end_time
             log_type = self.comboBox_3.currentText()
             file.write('生产线：' + scx + '\n')
             file.write('PLC节点：' + bq + '\n')

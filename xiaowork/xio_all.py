@@ -14,9 +14,12 @@ from numpy import *
 import random
 from PyQt4.QtGui import *
 from PyQt4.QtCore import QDir
+import smtplib
+from email.mime.text import MIMEText
 
 import Yolo_Model
 import putChineseText
+from maindo.webCamWindow import WebCamBox
 
 Stype = 0
 
@@ -56,7 +59,7 @@ class warningBox(QDialog):
 
     def cancelOpra(self):
         self.close()
-        self.return_value.append("")
+        # self.return_value.append("")
 
 
 def data_deal(func):  # 要接受参数就要改成三层装饰器
@@ -172,7 +175,10 @@ class XioAll(QtGui.QWidget):
         self.q = MyQueue()  # 存放帧队列,改为存放状态比较好
         self.vision = Vision()
 
+        # 控制输入视频地址
         self.CamPath = ""
+        self.isWebCam = False
+        self.isCamChanged = False
 
         # 数据库操作
         self.da = data_access.DataAccess()
@@ -196,7 +202,7 @@ class XioAll(QtGui.QWidget):
             pass
 
         self.yolo_Model = Yolo_Model.Yolo_Model()
-        self.displayMessage("......加载YOLO模型成功......")
+        self.displayMessage("...加载YOLO模型成功...")
 
         self.thread_figure = Timer('updatePlay()', sleep_time=120)  # 该线程用来每隔2分钟刷新绘图区
         self.connect(self.thread_figure, QtCore.SIGNAL('updatePlay()'), self.draw)
@@ -206,6 +212,7 @@ class XioAll(QtGui.QWidget):
         self.connect(self.ui.fileSelectButton, QtCore.SIGNAL('clicked()'), self.fileSelect)
         self.connect(self.ui.mailSenderButton, QtCore.SIGNAL('clicked()'), self.mailSend)
         self.connect(self.ui.confirmDateButton, QtCore.SIGNAL('clicked()'), self.displayMonthData)
+        self.connect(self.ui.WebCamButton, QtCore.SIGNAL('clicked()'), self.webCamInput)
 
         self.server = ThreadedTCPServer((self.HOST, self.PORT), ThreadedTCPRequestHandler)  # 该线程用来一直监听客户端的请求
         self.server_thread = threading.Thread(target=self.server.serve_forever)
@@ -304,11 +311,40 @@ class XioAll(QtGui.QWidget):
         absolute_path = QFileDialog.getOpenFileName(self, '视频选择',
                                                     '.', "MP4 files (*.mp4)")
 
-        if self.CamPath != absolute_path:
+        if absolute_path is not "":
             self.reFlushDetection()
             self.CamPath = absolute_path
+            self.isWebCam = False
+            self.isCamChanged = True
         else:
             self.displayMessage("...未进行选择，视频源路径不变...")
+
+    def webCamInput(self):
+        webCamDict = {"address": "", "status": ""}
+        webCamBox = WebCamBox("网络摄像头管理", webCamDict)
+
+        # 处理主动关闭输入框
+        if webCamBox.exec_():
+            return
+        if webCamDict["status"] == "":
+            return
+
+        ret = False
+        try:
+            cap = cv2.VideoCapture(webCamDict["address"])
+            ret, frame = cap.read()
+        except Exception as e:
+            raise e
+        finally:
+            if ret is True:
+                self.CamPath = webCamDict["address"]
+                self.isWebCam = True
+                self.isCamChanged = True
+                self.reFlushDetection()
+                self.displayMessage("...更换网络摄像头成功...")
+            else:
+                if webCamDict["status"] != "WrongPassword":
+                    self.displayMessage("...IP地址错误，请重新输入...")
 
     def reFlushDetection(self):
         self.X_l = 0
@@ -360,22 +396,22 @@ class XioAll(QtGui.QWidget):
         self.putTextEnd_time_up = None
         self.putTextEnd_time_down = None
 
-        self.displayMessage("......初始化检测参数成功......")
+        self.displayMessage("...初始化检测参数成功...")
 
     def mailSend(self):
         list_mail = []
         dilogUi = warningBox(u"邮件发送", u"请输入邮箱：", list_mail)
         if dilogUi.exec_():
             return
+        if len(list_mail) == 0:
+            return
         if len(list_mail[0]) != 0:
             print("准备发送！")
-            import smtplib
-            from email.mime.text import MIMEText
 
             list_oee = self.da.select_oee()
             list_loss = self.da.select_loss()
             dict_oee = {}
-            hour = min(time.localtime()[3], 19)
+            hour = min(time.localtime()[3], 18)
             for i in range(8, hour + 1):
                 dict_oee[str(i) + "点"] = list_oee[i - 8]
             sender = '1821959030@qq.com'
@@ -456,6 +492,8 @@ class XioAll(QtGui.QWidget):
         pass
 
     def video_recogtiaoshi(self):
+        if self.isWebCam:
+            return
         frame = self.frame_left
         frameDown = frame[250:500, 680:970]
 
@@ -489,6 +527,7 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_up = time.time()
             self.da.insert_action_("qinglihanzuiUP", 1)
             self.da.update_loss_("action1", 1)
+            self.da.update_loss_("action3", 1)
 
         if sum(self.status_LDOWN) > 5 and self.isActionStartDOWN is False:
             self.displayMessage("工人下方开始清理焊嘴")
@@ -501,8 +540,11 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_down = time.time()
             self.da.insert_action_("qinglihanzuiDOWN", 1)
             self.da.update_loss_("action1", 1)
+            self.da.update_loss_("action3", 1)
 
     def video_recogzhuangji(self):
+        if self.isWebCam:
+            return
         img = self.frame_left
         img = cv2.resize(img, (1280, 720))
         img_right = cv2.bitwise_and(self.mask_right, img)
@@ -626,15 +668,29 @@ class XioAll(QtGui.QWidget):
 
         self.left_cam = cv2.VideoCapture(cam1)
         ret_1, frame_1 = self.left_cam.read()
-        preCamPath = cam1
-        while True:
 
+        # 无法重复播放
+        # preCamPath = cam1
+        # while True:
+        #
+        #     self.frame_left = frame_1
+        #     if ret_1 is False:
+        #         self.left_cam = cv2.VideoCapture(cam1)
+        #     if self.CamPath != "" and self.CamPath != preCamPath:
+        #         self.left_cam = cv2.VideoCapture(self.CamPath)
+        #         preCamPath = self.CamPath
+        #     ret_1, frame_1 = self.left_cam.read()
+        #     if time_flag is True:
+        #         time.sleep(0.04)
+
+        # 优化版本
+        while True:
             self.frame_left = frame_1
             if ret_1 is False:
                 self.left_cam = cv2.VideoCapture(cam1)
-            if self.CamPath != "" and self.CamPath != preCamPath:
+            if self.CamPath != "" and self.isCamChanged:
                 self.left_cam = cv2.VideoCapture(self.CamPath)
-                preCamPath = self.CamPath
+                self.isCamChanged = False
             ret_1, frame_1 = self.left_cam.read()
             if time_flag is True:
                 time.sleep(0.04)
@@ -765,6 +821,8 @@ class XioAll(QtGui.QWidget):
         视频识别部分
         :return:
         '''
+        if self.isWebCam:
+            return
         self.totaltime += 1
         frame_left = self.frame_left  # 原始彩色图，左边摄像头
         frame_left_gray = cv2.cvtColor(frame_left, cv2.COLOR_BGR2GRAY)  # 原始图的灰度图
@@ -787,17 +845,15 @@ class XioAll(QtGui.QWidget):
                 self.is_work = True
 
                 if self.work_time % 20 == 0:
-                    current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-                    message = '机器正在工作'
                     if x != 1070:
-                        self.displayMessage(message)
+                        self.displayMessage("机器正在工作")
                 if self.work_time % 60 == 0:
                     self.da.update_loss_("action4", 1)
             else:
                 # ******* 截图
                 self.is_work = False
                 self.one_static_time += 1  # 一次静止时间
-                print(self.one_static_time)
+
                 if self.one_static_time % 20 == 0:
                     self.da.update_loss_("action3", 1)
                 # ********

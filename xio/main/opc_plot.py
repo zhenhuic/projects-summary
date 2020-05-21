@@ -229,7 +229,7 @@ class FigureLineChart:
             end_time = datetime.datetime.now().strftime("%Y-%m-%d")
             start_time = (datetime.datetime.strptime(end_time, "%Y-%m-%d") - datetime.timedelta(days=27)).strftime(
                 "%Y-%m-%d")
-            connection = pymysql.connect(host='localhost',
+            connection = pymysql.connect(host='10.19.3.49',
                                          user='root',
                                          password='123456',
                                          db='opc',

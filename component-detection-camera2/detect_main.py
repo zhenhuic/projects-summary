@@ -172,8 +172,8 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
             dbManager.zhuagnxiang_sql_and_insert(put_number, 0, 1)
             if flag_lvtong == 1 and flag_xiangzi == 1:
                 timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())
-                qthread.text_append.emit(timestr + '操作行为识别：' + '结束装箱')
                 qthread.text_append.emit(timestr + '第' + str(put_number) + '次装箱 零件投放成功')  # 第200次装箱 零件投放成功
+                qthread.text_append.emit(timestr + '操作行为识别：' + '结束装箱' + "\n")
                 print("投放成功")
             if flag_lvtong == 0 and flag_xiangzi == 1:
                 timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())

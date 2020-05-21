@@ -94,10 +94,10 @@ class DataAccess():
 
     def get_effience(self, list_loss):
         eff = int((sum(list_loss) - list_loss[2]) / sum(list_loss) * 100)
-        print(eff)
         return eff
 
 
 if __name__ == "__main__":
     da = DataAccess()
-    da.operate_("delete from loss where SJ='2020-05-19'")
+    da.operate_("delete from loss where SJ='2020-05-21'")
+    da.operate_("delete from oee_date where SJC='2020-05-21' ")

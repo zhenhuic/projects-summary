@@ -122,11 +122,17 @@ class Ui_Form(object):
 "color:rgb(255, 255, 255);"))
         self.fileSelectButton.setObjectName(_fromUtf8("fileSelectButton"))
         self.mailSenderButton = QtGui.QPushButton(Form)
-        self.mailSenderButton.setGeometry(QtCore.QRect(180, 30, 121, 31))
+        self.mailSenderButton.setGeometry(QtCore.QRect(1290, 30, 121, 31))
         self.mailSenderButton.setStyleSheet(_fromUtf8("font: 12pt \"宋体\";\n"
 "\n"
 "color:rgb(255, 255, 255);"))
         self.mailSenderButton.setObjectName(_fromUtf8("mailSenderButton"))
+        self.WebCamButton = QtGui.QPushButton(Form)
+        self.WebCamButton.setGeometry(QtCore.QRect(200, 30, 121, 31))
+        self.WebCamButton.setStyleSheet(_fromUtf8("font: 12pt \"宋体\";\n"
+"\n"
+"color:rgb(255, 255, 255);"))
+        self.WebCamButton.setObjectName(_fromUtf8("WebCamButton"))
 
         self.retranslateUi(Form)
         self.tabWidget.setCurrentIndex(0)
@@ -141,6 +147,7 @@ class Ui_Form(object):
         self.confirmDateButton.setText(_translate("Form", "确认", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("Form", "月数据展示", None))
         self.label_3.setText(_translate("Form", "   生产操作行为的自动识别(侧板)", None))
-        self.fileSelectButton.setText(_translate("Form", "视频源选择", None))
+        self.fileSelectButton.setText(_translate("Form", "本地视频上传", None))
         self.mailSenderButton.setText(_translate("Form", "邮件发送", None))
+        self.WebCamButton.setText(_translate("Form", "网络视频输入", None))
 
