@@ -30,3 +30,4 @@ class MyFigure(FigureCanvas):
         self.fig = Figure(figsize=(width, height), dpi=dpi)
         super(MyFigure, self).__init__(self.fig)  # 此句必不可少，否则不能显示图形
         self.ax1 = self.fig.add_subplot(111)
+        self.ax1.yaxis.set_major_locator(mtick.MaxNLocator(integer=True))

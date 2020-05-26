@@ -147,7 +147,13 @@ class Ui_Dialog_reporter(object):
                                      msg_box.Cancel | msg_box.Ok, msg_box.Cancel)
             if reply == QMessageBox.Ok:
                 fetch = Email()
-                fetch.send_email(str(self.lineEdit_1.text()), msg)
+                try :
+                    fetch.send_email(str(self.lineEdit_1.text()), msg)
+                except Exception:
+                    msg_box = QtWidgets.QMessageBox
+                    reply = msg_box.question(self.dia, '提醒', '系统忙，请稍后！',
+                                             msg_box.Ok | msg_box.Ok)
+                    self.dia.close()
                 self.fetchFlag = True
                 self.dia.close()
 
