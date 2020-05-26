@@ -44,6 +44,8 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
     count_stage2_1 = 0
     count_xiangzi = 0
     gui_count = 0
+    gui_bucket = 0
+    gui_box = 0
 
     mask_lvtong = cv.imread('mask/mask_lvtong.jpg')
     mask_xiangzi = cv.imread('mask/mask_xiangzi.jpg')
@@ -77,9 +79,21 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
 
         visualize = Visualize()
 
-        if flag_xiangzi == 1 :
+        if flag_xiangzi == 1:
+            if gui_box == 0:
+                # 在界面上显示，小包组件拿到
+                timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())
+                qthread.text_append.emit(timestr + '小包组件拿到')
+                dbManager.record_process(0, 1)
+                gui_box = 1
             image = visualize.draw_Chinese_words(image, '小包组件 拿到', (1000, 20), color=(0, 255, 0))
         if flag_lvtong == 1:
+            if gui_bucket == 0:
+                # 在界面上显示，小包组件拿到
+                timestr = time.strftime('%Y-%m-%d %H:%M:%S ', time.localtime())
+                qthread.text_append.emit(timestr + '风管拿到')
+                dbManager.record_process(1, 0)
+                gui_bucket = 1
             image = visualize.draw_Chinese_words(image, '风管 拿到', (1000, 58), color=(255, 255, 0))
 
         # visualize.draw(frame_720, flag_lvtong, flag_xiangzi, show_fps)
@@ -206,6 +220,8 @@ def main(qthread):  # 加入参数qthread，用于pyqt的引用
             count_stage2_1 = 0
             count_xiangzi = 0
             put_number += 1
+            gui_bucket = 0
+            gui_box = 0
             # count_stage = 0
 
         #print(flag_stage1, flag_stage1_1, flag_stage2_1, flag_stage3, flag_lvtong, flag_xiangzi)

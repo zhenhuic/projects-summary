@@ -162,12 +162,23 @@ class DbManager:
             print(e)
             self.conn.rollback()
 
-
     def zhuagnxiang_sql_and_insert(self, ZX_id: int, ST_ZX: int, ED_ZX: int):
         try:
             dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             sql = "INSERT INTO zhuangxiang(date, zhuagnxiang_id, kaishizhuagnxiang, jieshuzhuagnxiang) values ('{}',{},{},{})".\
                 format(dt, str(ZX_id), str(ST_ZX), str(ED_ZX))
+            # print(sql)
+            self.cur.execute(sql)
+            self.conn.commit()
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+
+    def record_process(self, box_get: int, bucket_get: int):
+        try:
+            dt = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            sql = "INSERT INTO process_record(date, xiaobaozujian_get,fengguan_get) values ('{}',{},{})".\
+                format(dt, str(box_get), str(bucket_get))
             # print(sql)
             self.cur.execute(sql)
             self.conn.commit()
