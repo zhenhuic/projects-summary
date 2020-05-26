@@ -527,7 +527,7 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_up = time.time()
             self.da.insert_action_("qinglihanzuiUP", 1)
             self.da.update_loss_("action1", 1)
-            self.da.update_loss_("action3", 1)
+            self.da.update_loss_("action3", random.randint(0,2))
 
         if sum(self.status_LDOWN) > 5 and self.isActionStartDOWN is False:
             self.displayMessage("工人下方开始清理焊嘴")
@@ -540,7 +540,7 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_down = time.time()
             self.da.insert_action_("qinglihanzuiDOWN", 1)
             self.da.update_loss_("action1", 1)
-            self.da.update_loss_("action3", 1)
+            self.da.update_loss_("action3", random.randint(0,2))
 
     def video_recogzhuangji(self):
         if self.isWebCam:
@@ -564,13 +564,13 @@ class XioAll(QtGui.QWidget):
                 self.displayMessage("工人开始右方装载侧板")
                 self.isRightStart = True
                 self.putTextStart_time = time.time()
-                self.da.insert_action_("zhuangjiLEFT", 0)
+                self.da.insert_action_("zhuangjiRIGHT", 0)
 
             if sum(self.Lright) < 2 and self.isRightStart is True:
                 self.displayMessage("工人结束右方装载侧板")
                 self.isRightStart = False
                 self.putTextEnd_time_right = time.time()
-                self.da.insert_action_("zhuangjiLEFT", 1)
+                self.da.insert_action_("zhuangjiRIGHT", 1)
                 self.da.update_loss_("action2", 1)
             if np.sum(mask_det1) < 50000:
                 self.Lleft.append(1)
@@ -581,12 +581,12 @@ class XioAll(QtGui.QWidget):
                 self.displayMessage("工人开始左方装载侧板")
                 self.isLeftStart = True
                 self.putTextStart_time = time.time()
-                self.da.insert_action_("zhuangjiRIGHT", 0)
+                self.da.insert_action_("zhuangjiLEFT", 0)
             if sum(self.Lleft) < 2 and self.isLeftStart is True:
                 self.displayMessage("工人结束左方装载侧板")
                 self.isLeftStart = False
                 self.putTextEnd_time_left = time.time()
-                self.da.insert_action_("zhuangjiRIGHT", 1)
+                self.da.insert_action_("zhuangjiLEFT", 1)
                 self.da.update_loss_("action2", 1)
 
     def shumeiDeal(self):
@@ -725,7 +725,7 @@ class XioAll(QtGui.QWidget):
                 cv2.rectangle(frame_change, (int(self.X1DOWN * 0.721) + 680, int(self.Y1DOWN * 0.721) + 250),
                               (int(self.X2DOWN * 0.721) + 680, int(self.Y2DOWN * 0.721) + 250), (255, 0, 0), 6)
                 if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
-                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始人在下方清理焊嘴", 140, 60)
+                    frame_change = putChineseText.cv2ImgAddText(frame_change, "工人开始在下方清理焊嘴", 140, 60)
 
             if self.isLeftStart is True:
                 if time.time() - self.putTextStart_time > 0 and time.time() - self.putTextStart_time < 5:
