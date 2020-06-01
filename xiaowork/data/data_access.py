@@ -99,5 +99,5 @@ class DataAccess():
 
 if __name__ == "__main__":
     da = DataAccess()
-    da.operate_("delete from loss where SJ='2020-05-21'")
-    da.operate_("delete from oee_date where SJC='2020-05-21' ")
+    da.operate_("delete from loss where SJ='2020-05-27'")
+    da.operate_("delete from oee_date where SJC='2020-05-27' ")
