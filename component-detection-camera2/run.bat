@@ -1,0 +1,1 @@
+D:\anaconda3\envs\xio\python.exe E:/projects-summary/component-detection-camera2/gui_main.py

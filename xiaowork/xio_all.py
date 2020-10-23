@@ -202,7 +202,7 @@ class XioAll(QtGui.QWidget):
             pass
 
         self.yolo_Model = Yolo_Model.Yolo_Model()
-        self.displayMessage("...加载YOLO模型成功...")
+        # self.displayMessage("...加载YOLO模型成功...")
 
         self.thread_figure = Timer('updatePlay()', sleep_time=120)  # 该线程用来每隔2分钟刷新绘图区
         self.connect(self.thread_figure, QtCore.SIGNAL('updatePlay()'), self.draw)
@@ -527,7 +527,7 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_up = time.time()
             self.da.insert_action_("qinglihanzuiUP", 1)
             self.da.update_loss_("action1", 1)
-            self.da.update_loss_("action3", random.randint(0,2))
+            self.da.update_loss_("action3", random.randint(0, 2))
 
         if sum(self.status_LDOWN) > 5 and self.isActionStartDOWN is False:
             self.displayMessage("工人下方开始清理焊嘴")
@@ -540,7 +540,7 @@ class XioAll(QtGui.QWidget):
             self.putTextEnd_time_down = time.time()
             self.da.insert_action_("qinglihanzuiDOWN", 1)
             self.da.update_loss_("action1", 1)
-            self.da.update_loss_("action3", random.randint(0,2))
+            self.da.update_loss_("action3", random.randint(0, 2))
 
     def video_recogzhuangji(self):
         if self.isWebCam:
@@ -714,7 +714,7 @@ class XioAll(QtGui.QWidget):
 
             # if self.type_l == 'work':
             #    cv2.rectangle(frame_change, (self.X_l, self.Y_l), (self.X_l + 100, self.Y_l + 100), (0, 255, 0), 4)
-
+            frame_change = putChineseText.cv2ImgAddText(frame_change, "生产操作行为的自动识别（侧板焊接车间）", 50, 30,(0,0,0),50)
             if self.isActionStartUP is True:
                 cv2.rectangle(frame_change, (540 + int(self.x1UP * 0.625), 140 + int(self.y1UP * 0.625)),
                               (540 + int(self.x2UP * 0.625), 140 + int(self.y2UP * 0.625)), (255, 0, 0), 6)

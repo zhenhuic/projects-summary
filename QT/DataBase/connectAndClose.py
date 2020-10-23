@@ -10,7 +10,7 @@ class ConnectAndClose:
 
     def database_connect(self):
         """连接数据库"""
-        con = pymysql.Connect('localhost', 'root', '123456', 'opc')
+        con = pymysql.Connect('10.19.3.49', 'root', '123456', 'opc')
         return con, con.cursor()
 
     def database_close(self, con, cursor):
